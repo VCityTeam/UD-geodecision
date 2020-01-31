@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>geodecision.osmquery.methods &#8212; geodecision 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for geodecision.osmquery.methods</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue Jun 25 11:50:32 2019</span>
+
+<span class="sd">@author: thomas</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">overpass</span>
+<span class="kn">import</span> <span class="nn">geojson</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="get_OSM_poly"><a class="viewcode-back" href="../../../geodecision.osmquery.html#geodecision.osmquery.methods.get_OSM_poly">[docs]</a><span class="k">def</span> <span class="nf">get_OSM_poly</span><span class="p">(</span>
+        <span class="n">bbox</span><span class="p">,</span> 
+        <span class="n">key</span><span class="p">,</span> 
+        <span class="n">value</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> 
+        <span class="n">timeout</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;https://overpass-api.de/api/interpreter&quot;</span>
+        <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Get OSM data with key/value pair and that is Polygon by making</span>
+<span class="sd">    queries on Overpass</span>
+<span class="sd">    </span>
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    GeoJSON Polygons FeatureCollection</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - bbox(tuple):</span>
+<span class="sd">        - bounding box for the query</span>
+<span class="sd">        - must be (SOUTH, WEST, NORTH, EAST)</span>
+<span class="sd">        - must be EPSG 4326 (WGS84) projection</span>
+<span class="sd">        - ex: (45.772, 4.864, 45.778, 4.875)</span>
+<span class="sd">    - key(str):</span>
+<span class="sd">        - key for the OSM query</span>
+<span class="sd">    - value(str):</span>
+<span class="sd">        - value for the OSM query</span>
+<span class="sd">    - timeout(int):</span>
+<span class="sd">        - time in seconds for the timeout</span>
+<span class="sd">        - default: 40</span>
+<span class="sd">    - endpoint(str):</span>
+<span class="sd">        - endpoint for the queries</span>
+<span class="sd">        - default: &quot;https://overpass-api.de/api/interpreter&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">api</span> <span class="o">=</span> <span class="n">overpass</span><span class="o">.</span><span class="n">API</span><span class="p">(</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> 
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">requ</span> <span class="o">=</span>  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        (</span>
+<span class="s2">            node[&quot;</span><span class="si">{0}</span><span class="s2">&quot;]</span><span class="si">{1}</span><span class="s2">;</span>
+<span class="s2">            way[&quot;</span><span class="si">{0}</span><span class="s2">&quot;]</span><span class="si">{1}</span><span class="s2">;</span>
+<span class="s2">            relation[&quot;</span><span class="si">{0}</span><span class="s2">&quot;]</span><span class="si">{1}</span><span class="s2">;</span>
+<span class="s2">        );</span>
+<span class="s2">        (._;&gt;;);</span>
+<span class="s2">        out geom;</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">bbox</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">requ</span> <span class="o">=</span>  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        (</span>
+<span class="s2">            node[&quot;</span><span class="si">{0}</span><span class="s2">&quot;=&quot;</span><span class="si">{1}</span><span class="s2">&quot;]</span><span class="si">{2}</span><span class="s2">;</span>
+<span class="s2">            way[&quot;</span><span class="si">{0}</span><span class="s2">&quot;=&quot;</span><span class="si">{1}</span><span class="s2">&quot;]</span><span class="si">{2}</span><span class="s2">;</span>
+<span class="s2">            relation[&quot;</span><span class="si">{0}</span><span class="s2">&quot;=&quot;</span><span class="si">{1}</span><span class="s2">&quot;]</span><span class="si">{2}</span><span class="s2">;</span>
+<span class="s2">        );</span>
+<span class="s2">        (._;&gt;;);</span>
+<span class="s2">        out geom;</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span><span class="n">bbox</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">requ</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">responseformat</span><span class="o">=</span><span class="s2">&quot;geojson&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_from_lines_to_polys</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+<span class="c1">#    return data</span>
+
+<span class="k">def</span> <span class="nf">_add_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">geojson</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">feature</span><span class="o">.</span><span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">feature</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;osm_id&quot;</span><span class="p">:</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+    <span class="n">new_feature</span> <span class="o">=</span> <span class="n">geojson</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">,</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">properties</span>
+    <span class="p">)</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_feature</span><span class="p">)</span>
+            
+    <span class="k">return</span> <span class="n">features</span>
+
+<span class="k">def</span> <span class="nf">_from_lines_to_polys</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Transform OSM data from LineStrings to Polygons</span>
+<span class="sd">    </span>
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    GeoJSON Polygons FeatureCollection</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - data(json):</span>
+<span class="sd">        - json from OSM query</span>
+<span class="sd">    - key(str):</span>
+<span class="sd">        - key used for the OSM query</span>
+<span class="sd">    - value(str):</span>
+<span class="sd">        - value used for the OSM query</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">geojson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;LineString&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="n">_add_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">key</span> <span class="ow">in</span> <span class="n">feature</span><span class="o">.</span><span class="n">properties</span> <span class="ow">and</span> <span class="n">feature</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span>
+                <span class="p">):</span>
+                    <span class="n">features</span> <span class="o">=</span> <span class="n">_add_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span> 
+            
+    <span class="k">return</span> <span class="n">geojson</span><span class="o">.</span><span class="n">FeatureCollection</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">geodecision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Leysens.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
