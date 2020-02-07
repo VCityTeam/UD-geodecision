@@ -1,7 +1,0 @@
-{
-	"bbox": [45.7, 4.82, 45.8, 4.99],
-	"key": "leisure",
-	"value": "park",
-	"driver": "GPKG",
-	"output_file": "parks.gpkg"
-}

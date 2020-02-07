@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>geodecision.graph package &#8212; geodecision 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="geodecision.logger package" href="geodecision.logger.html" />
+    <link rel="prev" title="geodecision.classification package" href="geodecision.classification.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="geodecision-graph-package">
+<h1>geodecision.graph package<a class="headerlink" href="#geodecision-graph-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-geodecision.graph.connectpoints">
+<span id="geodecision-graph-connectpoints-module"></span><h2>geodecision.graph.connectpoints module<a class="headerlink" href="#module-geodecision.graph.connectpoints" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Sep 12 16:16:55 2019</p>
+<p>Source: <a class="reference external" href="https://github.com/ywnch/toolbox">https://github.com/ywnch/toolbox</a> (Yuwen Chang)
+License of the source:</p>
+<blockquote>
+<div><p>MIT License</p>
+<p>Copyright (c) 2019 Yuwen</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+</div></blockquote>
+<p>&#64;adaptation: thomas</p>
+<dl class="class">
+<dt id="geodecision.graph.connectpoints.ConnectPoints">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.graph.connectpoints.</code><code class="sig-name descname">ConnectPoints</code><span class="sig-paren">(</span><em class="sig-param">points</em>, <em class="sig-param">nodes</em>, <em class="sig-param">edges</em>, <em class="sig-param">access_type</em>, <em class="sig-param">prefix</em>, <em class="sig-param">key_col=None</em>, <em class="sig-param">path=None</em>, <em class="sig-param">threshold=50</em>, <em class="sig-param">knn=5</em>, <em class="sig-param">distance=5000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Connect and integrate a set of POIs into an existing road network.
+Given a road network in the form of two GeoDataFrames: nodes and edges,
+link each POI to the nearest edge (road segment) based on its projection
+point (PP) and generate a new integrated road network including the POIs,
+the projected points, and the connection edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>- nodes (GeoDataFrame)</strong> (<em>the original gdf with POIs and PPs appended</em>)</p></li>
+<li><p><strong>- edges (GeoDataFrame)</strong> (<em>the original gdf with connection edges appended</em>) – and existing edges updated (if PPs are present)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pois</strong><strong> (</strong><strong>GeoDataFrame</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>GDF of POI (geom: Point)</p></li>
+<li><p>Must be in metric projection (same for nodes, pois and edges)</p></li>
+</ul>
+</p></li>
+<li><p><strong>nodes</strong><strong> (</strong><strong>GeoDataFrame</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>GDF of road network nodes (geom: Point)</p></li>
+<li><p>Must be in metric projection (same for nodes, pois and edges)</p></li>
+</ul>
+</p></li>
+<li><p><strong>edges</strong><strong> (</strong><strong>GeoDataFrame</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>GDF of road network edges (geom: LineString)</p></li>
+<li><p>Must be in metric projection (same for nodes, pois and edges)</p></li>
+</ul>
+</p></li>
+<li><p><strong>access_type</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Type of polygon that have to be connected to the network</p></li>
+<li><p>Ex: “park”, “building”, …</p></li>
+</ul>
+</p></li>
+<li><p><strong>prefix</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Prefix for the name of new nodes and edges files</p></li>
+<li><p>Ex: “Lyon_area_parks”</p></li>
+</ul>
+</p></li>
+<li><p><strong>key_col</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>a unique key column of pois should be provided,
+e.g., ‘index’, ‘osmid’, ‘poi_number’, etc.
+Currently, this will be renamed into ‘osmid’ in the output.</p></li>
+</ul>
+</p></li>
+<li><p><strong>path</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>directory path to use for saving files (nodes and edges).</p></li>
+</ul>
+</p></li>
+<li><p><strong>threshold</strong><strong> (</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>the max length (in meters) of a POI connection edge, POIs with
+connection edge beyond this length will be removed.</p></li>
+</ul>
+</p></li>
+<li><p><strong>knn</strong><strong> (</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>k nearest neighbors to query for the nearest edge.
+Consider increasing this number up to 10 if the connection
+output is slightly unreasonable. But higher knn number will
+slow down the process.</p></li>
+</ul>
+</p></li>
+<li><p><strong>distance</strong><strong>(</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>distance reachable in 60 minutes</p></li>
+<li><p>required to measure the time distance of an edge</p></li>
+<li><p>default: 5000 (meters)</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.find_kne">
+<code class="sig-name descname">find_kne</code><span class="sig-paren">(</span><em class="sig-param">point</em>, <em class="sig-param">lines</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.find_kne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.find_kne" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.get_pp">
+<code class="sig-name descname">get_pp</code><span class="sig-paren">(</span><em class="sig-param">point</em>, <em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.get_pp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.get_pp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the projected point (pp) of ‘point’ on ‘line’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Projected points</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong><strong>(</strong><strong>Shapely Point object</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Point</p></li>
+</ul>
+</p></li>
+<li><p><strong>line</strong><strong>(</strong><strong>Shapely LineString object</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>LineString</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.process">
+<code class="sig-name descname">process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the complete process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.split_line">
+<code class="sig-name descname">split_line</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">pps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.split_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.split_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split ‘line’ by all intersecting ‘pps’ (as multipoint)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>New_lines (list)</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a list of all line segments after the split</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.update_edges">
+<code class="sig-name descname">update_edges</code><span class="sig-paren">(</span><em class="sig-param">edges</em>, <em class="sig-param">new_lines</em>, <em class="sig-param">replace</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.update_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.update_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update edge info by adding new_lines; or,
+replace existing ones with new_lines (n-split segments).</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>edges(DataFrame):</dt><dd><ul>
+<li><p>Edges DataFrame</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>new_lines(list):</dt><dd><ul>
+<li><p>list of new lines to add</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>replace:</dt><dd><p>-treat new_lines (flat list) as newly added edges if False,
+else replace existing edges with new_lines (often a nested list)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>kne_idx refers to ‘fid in Rtree’/’label’/’loc’, not positional iloc</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.update_edges_process">
+<code class="sig-name descname">update_edges_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.update_edges_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.update_edges_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the NetworkX Graph object with edges created
+during the splitting edges operation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.update_nodes">
+<code class="sig-name descname">update_nodes</code><span class="sig-paren">(</span><em class="sig-param">nodes</em>, <em class="sig-param">new_points</em>, <em class="sig-param">ptype</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.update_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.update_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update nodes with a list (pp) or a GeoDataFrame (access) of new_points.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>ptype(str):</dt><dd><ul>
+<li><p>type of Point list to append, ‘pp’ or ‘access’</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.connectpoints.ConnectPoints.update_nodes_process">
+<code class="sig-name descname">update_nodes_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/connectpoints.html#ConnectPoints.update_nodes_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.connectpoints.ConnectPoints.update_nodes_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the NetworkX Graph object with input nodes and nodes created
+during the splitting edges operation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-geodecision.graph.splittednodes">
+<span id="geodecision-graph-splittednodes-module"></span><h2>geodecision.graph.splittednodes module<a class="headerlink" href="#module-geodecision.graph.splittednodes" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Sep 11 09:44:18 2019</p>
+<p>&#64;author: thomas</p>
+<dl class="class">
+<dt id="geodecision.graph.splittednodes.GetSplitNodes">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.graph.splittednodes.</code><code class="sig-name descname">GetSplitNodes</code><span class="sig-paren">(</span><em class="sig-param">gdf_polys</em>, <em class="sig-param">dist_split</em>, <em class="sig-param">id_column</em>, <em class="sig-param">columns=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/splittednodes.html#GetSplitNodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.splittednodes.GetSplitNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Get nodes from splitting polygon’s perimeter linestrings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Split points GeoPandas GeoDataFrame with unique id for each new points</em></p></li>
+<li><p><strong>in a specific column/Serie</strong> (<em>“unique_id”</em>)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>gdf_polys</strong><strong> (</strong><strong>GeoDataFrame</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>polygons GeoPandas GeoDataFrame</p></li>
+<li><p>Must have a metric projection (distance measure in meters)</p></li>
+</ul>
+</p></li>
+<li><p><strong>dist_split</strong><strong> (</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Split distance (in meters)</p></li>
+</ul>
+</p></li>
+<li><p><strong>id_column</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Name of the column with unique id for each polygon</p></li>
+</ul>
+</p></li>
+<li><p><strong>columns</strong><strong>(</strong><strong>list</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>List of columns name (columns that will be kept)</p></li>
+<li><p>Default: []</p></li>
+<li><p>If default, keep all columns but geometry column other than Points</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="geodecision.graph.splittednodes.GetSplitNodes.get_split_nodes">
+<code class="sig-name descname">get_split_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/splittednodes.html#GetSplitNodes.get_split_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.splittednodes.GetSplitNodes.get_split_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Points from splitting polygon’s perimeter Linestrings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Split points GeoPandas GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-geodecision.graph.utils">
+<span id="geodecision-graph-utils-module"></span><h2>geodecision.graph.utils module<a class="headerlink" href="#module-geodecision.graph.utils" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Jun 11 16:15:41 2019</p>
+<p>&#64;author: thomas</p>
+<dl class="class">
+<dt id="geodecision.graph.utils.Points">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">Points</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em>, <em class="sig-param">geometry</em><span class="sig-paren">)</span><a class="headerlink" href="#geodecision.graph.utils.Points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="geodecision.graph.utils.Points.coordinates">
+<em class="property">property </em><code class="sig-name descname">coordinates</code><a class="headerlink" href="#geodecision.graph.utils.Points.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.graph.utils.Points.geometry">
+<em class="property">property </em><code class="sig-name descname">geometry</code><a class="headerlink" href="#geodecision.graph.utils.Points.geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.graph.utils.df_to_graph">
+<code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">df_to_graph</code><span class="sig-paren">(</span><em class="sig-param">edges_source</em>, <em class="sig-param">nodes_source</em>, <em class="sig-param">source='source'</em>, <em class="sig-param">target='target'</em>, <em class="sig-param">driver='json'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/utils.html#df_to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.utils.df_to_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get edges and nodes json files and return G, a Networkx graph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Graph G</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edges_source</strong><strong>(</strong><strong>str OR GeoDataframe</strong><strong>)</strong> (<em>-</em>) – complete path with filename for edges (when driver is “json” or “shp”)
+OR GeoDataframe (when driver is “gdf”)</p></li>
+<li><p><strong>nodes_source</strong><strong>(</strong><strong>str OR GeoDataframe</strong><strong>)</strong> (<em>-</em>) – complete path with filename for nodes (when driver is “json” or “shp”)
+OR GeoDataframe (when driver is “gdf”)</p></li>
+<li><p><strong>source</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – name of source field
+default: “source”</p></li>
+<li><p><strong>target</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – name of target field
+default: “target”</p></li>
+<li><p><strong>driver</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – source file type (“json”, “shp”)
+default: “json”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.graph.utils.graph_to_df">
+<code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">graph_to_df</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">edges_path</em>, <em class="sig-param">nodes_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/utils.html#graph_to_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.utils.graph_to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write json files with edges and nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong><strong>(</strong><strong>Networkx graph</strong><strong>)</strong> (<em>-</em>) – graph with geometries</p></li>
+<li><p><strong>edges_path</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – complete path with filename for edges</p></li>
+<li><p><strong>nodes_path</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – complete path with filename for nodes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.graph.utils.graph_to_gdf_points">
+<code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">graph_to_gdf_points</code><span class="sig-paren">(</span><em class="sig-param">G</em>, <em class="sig-param">lon</em>, <em class="sig-param">lat</em>, <em class="sig-param">epsg</em>, <em class="sig-param">get_lines=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/utils.html#graph_to_gdf_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.utils.graph_to_gdf_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>From Networkx Graph nodes from OSM data, make a GeoDataFrame with Points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Points GeoDataFrame</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong><strong> (</strong><strong>NetworkX graph</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Graph based on OSM data (build with Osmnx library)</p></li>
+</ul>
+</p></li>
+<li><p><strong>lat</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>name of column with lat coordinates</p></li>
+</ul>
+</p></li>
+<li><p><strong>lon</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>name of column with lon coordinates</p></li>
+</ul>
+</p></li>
+<li><p><strong>epsg</strong><strong>(</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>EPSG of coordinates</p></li>
+</ul>
+</p></li>
+<li><p><strong>get_lines</strong><strong>(</strong><strong>bool</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>if set to True, return points and lines GeoDataFrame</p></li>
+<li><p>default: False</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.graph.utils.graph_with_time">
+<code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">graph_with_time</code><span class="sig-paren">(</span><em class="sig-param">G</em>, <em class="sig-param">distance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/utils.html#graph_with_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.utils.graph_with_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get edges and nodes json files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Networkx Graph with time distance based on walk distance speed</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong><strong> (</strong><strong>NetworkX graph</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Graph based on OSM data (build with Osmnx library)</p></li>
+</ul>
+</p></li>
+<li><p><strong>distance</strong><strong>(</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>distance in meters that could be reached within 1 hour</p></li>
+<li><p>ex: 5000</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.graph.utils.reproject_points">
+<code class="sig-prename descclassname">geodecision.graph.utils.</code><code class="sig-name descname">reproject_points</code><span class="sig-paren">(</span><em class="sig-param">pts</em>, <em class="sig-param">epsg_in</em>, <em class="sig-param">epsg_out</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/graph/utils.html#reproject_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.graph.utils.reproject_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reproject points with pyproj.Transformer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>coordinates: tuple with 2 lists (xs and ys)</p></li>
+<li><p>geometry: list of Shapely Points</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Namedtuple Points object with</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pts</strong><strong> (</strong><strong>list of tuples coordinates</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>List of coordinates</p></li>
+<li><p>ex: [(4.56, 45.8), (4.8, 46.29)]</p></li>
+</ul>
+</p></li>
+<li><p><strong>epsg_in</strong><strong> (</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Input EPSG</p></li>
+<li><p>ex: 4326</p></li>
+</ul>
+</p></li>
+<li><p><strong>epsg_out</strong><strong> (</strong><strong>int</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Output EPSG</p></li>
+<li><p>ex: 2154</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geodecision.graph">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-geodecision.graph" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Dec  3 16:10:39 2019</p>
+<p>&#64;author: thomas</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">geodecision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">geodecision</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="geodecision.html">geodecision package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">geodecision</a><ul>
+  <li><a href="geodecision.html">geodecision package</a><ul>
+      <li>Previous: <a href="geodecision.classification.html" title="previous chapter">geodecision.classification package</a></li>
+      <li>Next: <a href="geodecision.logger.html" title="next chapter">geodecision.logger package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Leysens.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/geodecision.graph.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

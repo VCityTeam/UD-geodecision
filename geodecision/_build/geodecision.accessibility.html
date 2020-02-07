@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>geodecision.accessibility package &#8212; geodecision 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="geodecision.classification package" href="geodecision.classification.html" />
+    <link rel="prev" title="geodecision package" href="geodecision.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="geodecision-accessibility-package">
+<h1>geodecision.accessibility package<a class="headerlink" href="#geodecision-accessibility-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-geodecision.accessibility.accessibility">
+<span id="geodecision-accessibility-accessibility-module"></span><h2>geodecision.accessibility.accessibility module<a class="headerlink" href="#module-geodecision.accessibility.accessibility" title="Permalink to this headline">¶</a></h2>
+<p>Get Accessibility and Mask layers.</p>
+<p>Usage: get_accessibility_and_mask.py [&lt;json_params&gt;]</p>
+<blockquote>
+<div><p>-h –help  Show this screen.
+-i         Parameters JSON file</p>
+</div></blockquote>
+<dl class="function">
+<dt id="geodecision.accessibility.accessibility.delete_list_cols">
+<code class="sig-prename descclassname">geodecision.accessibility.accessibility.</code><code class="sig-name descname">delete_list_cols</code><span class="sig-paren">(</span><em class="sig-param">df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/accessibility.html#delete_list_cols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.accessibility.delete_list_cols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete columns containing lists in DataFrame or GeoDataFrame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>New DataFrame or GeoDataFrame without columns containing lists</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong><strong> (</strong><strong>DataFrame</strong><strong> or </strong><strong>GeoDataFra</strong> (<em>-</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.accessibility.accessibility.erase_file">
+<code class="sig-prename descclassname">geodecision.accessibility.accessibility.</code><code class="sig-name descname">erase_file</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/accessibility.html#erase_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.accessibility.erase_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file exists and delete it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul class="simple">
+<li><p>complete path file name</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.accessibility.accessibility.run">
+<code class="sig-prename descclassname">geodecision.accessibility.accessibility.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">json_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/accessibility.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.accessibility.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run all the scripts based on input parameters and write output files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Results (object from Accessibility class)</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>json_params</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul class="simple">
+<li><p>Complete path file name to JSON parameters file</p></li>
+<li><p>ex: “./parameters/Lyon/test_params.json”</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geodecision.accessibility.accessibility.write_results">
+<code class="sig-prename descclassname">geodecision.accessibility.accessibility.</code><code class="sig-name descname">write_results</code><span class="sig-paren">(</span><em class="sig-param">results</em>, <em class="sig-param">output_folder</em>, <em class="sig-param">output_format='geopackage'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/accessibility.html#write_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.accessibility.write_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write all the results in set format(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong><strong> (</strong><strong>object</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>results object from Accessibility class</p></li>
+</ul>
+</p></li>
+<li><p><strong>output_folder</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>Path to the folder to write files</p></li>
+</ul>
+</p></li>
+<li><p><strong>output_format</strong><strong> (</strong><strong>str</strong><strong>)</strong> (<em>-</em>) – <ul>
+<li><p>format of the output files</p></li>
+<li><p>Default: “geopackage”</p></li>
+<li><dl class="simple">
+<dt>Options:</dt><dd><ul>
+<li><p>”geopackage”</p></li>
+<li><p>”geojson”</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geodecision.accessibility.isochrone">
+<span id="geodecision-accessibility-isochrone-module"></span><h2>geodecision.accessibility.isochrone module<a class="headerlink" href="#module-geodecision.accessibility.isochrone" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Jun 12 17:43:42 2019</p>
+<p>&#64;author: thomas</p>
+<dl class="class">
+<dt id="geodecision.accessibility.isochrone.Accessibility">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.accessibility.isochrone.</code><code class="sig-name descname">Accessibility</code><span class="sig-paren">(</span><em class="sig-param">G, trip_times, distance_buffer, weight, center_nodes, input_polygons, palette={3: ['#440154', '#208F8C', '#FDE724'], 4: ['#440154', '#30678D', '#35B778', '#FDE724'], 5: ['#440154', '#3B518A', '#208F8C', '#5BC862', '#FDE724'], 6: ['#440154', '#404387', '#29788E', '#22A784', '#79D151', '#FDE724'], 7: ['#440154', '#443982', '#30678D', '#208F8C', '#35B778', '#8DD644', '#FDE724'], 8: ['#440154', '#46317E', '#365A8C', '#277E8E', '#1EA087', '#49C16D', '#9DD93A', '#FDE724'], 9: ['#440154', '#472B7A', '#3B518A', '#2C718E', '#208F8C', '#27AD80', '#5BC862', '#AADB32', '#FDE724'], 10: ['#440154', '#472777', '#3E4989', '#30678D', '#25828E', '#1E9C89', '#35B778', '#6BCD59', '#B2DD2C', '#FDE724'], 11: ['#440154', '#482374', '#404387', '#345E8D', '#29788E', '#208F8C', '#22A784', '#42BE71', '#79D151', '#BADE27', '#FDE724'], 256: ['#440154', '#440255', '#440357', '#450558', '#45065A', '#45085B', '#46095C', '#460B5E', '#460C5F', '#460E61', '#470F62', '#471163', '#471265', '#471466', '#471567', '#471669', '#47186A', '#48196B', '#481A6C', '#481C6E', '#481D6F', '#481E70', '#482071', '#482172', '#482273', '#482374', '#472575', '#472676', '#472777', '#472878', '#472A79', '#472B7A', '#472C7B', '#462D7C', '#462F7C', '#46307D', '#46317E', '#45327F', '#45347F', '#453580', '#453681', '#443781', '#443982', '#433A83', '#433B83', '#433C84', '#423D84', '#423E85', '#424085', '#414186', '#414286', '#404387', '#404487', '#3F4587', '#3F4788', '#3E4888', '#3E4989', '#3D4A89', '#3D4B89', '#3D4C89', '#3C4D8A', '#3C4E8A', '#3B508A', '#3B518A', '#3A528B', '#3A538B', '#39548B', '#39558B', '#38568B', '#38578C', '#37588C', '#37598C', '#365A8C', '#365B8C', '#355C8C', '#355D8C', '#345E8D', '#345F8D', '#33608D', '#33618D', '#32628D', '#32638D', '#31648D', '#31658D', '#31668D', '#30678D', '#30688D', '#2F698D', '#2F6A8D', '#2E6B8E', '#2E6C8E', '#2E6D8E', '#2D6E8E', '#2D6F8E', '#2C708E', '#2C718E', '#2C728E', '#2B738E', '#2B748E', '#2A758E', '#2A768E', '#2A778E', '#29788E', '#29798E', '#287A8E', '#287A8E', '#287B8E', '#277C8E', '#277D8E', '#277E8E', '#267F8E', '#26808E', '#26818E', '#25828E', '#25838D', '#24848D', '#24858D', '#24868D', '#23878D', '#23888D', '#23898D', '#22898D', '#228A8D', '#228B8D', '#218C8D', '#218D8C', '#218E8C', '#208F8C', '#20908C', '#20918C', '#1F928C', '#1F938B', '#1F948B', '#1F958B', '#1F968B', '#1E978A', '#1E988A', '#1E998A', '#1E998A', '#1E9A89', '#1E9B89', '#1E9C89', '#1E9D88', '#1E9E88', '#1E9F88', '#1EA087', '#1FA187', '#1FA286', '#1FA386', '#20A485', '#20A585', '#21A685', '#21A784', '#22A784', '#23A883', '#23A982', '#24AA82', '#25AB81', '#26AC81', '#27AD80', '#28AE7F', '#29AF7F', '#2AB07E', '#2BB17D', '#2CB17D', '#2EB27C', '#2FB37B', '#30B47A', '#32B57A', '#33B679', '#35B778', '#36B877', '#38B976', '#39B976', '#3BBA75', '#3DBB74', '#3EBC73', '#40BD72', '#42BE71', '#44BE70', '#45BF6F', '#47C06E', '#49C16D', '#4BC26C', '#4DC26B', '#4FC369', '#51C468', '#53C567', '#55C666', '#57C665', '#59C764', '#5BC862', '#5EC961', '#60C960', '#62CA5F', '#64CB5D', '#67CC5C', '#69CC5B', '#6BCD59', '#6DCE58', '#70CE56', '#72CF55', '#74D054', '#77D052', '#79D151', '#7CD24F', '#7ED24E', '#81D34C', '#83D34B', '#86D449', '#88D547', '#8BD546', '#8DD644', '#90D643', '#92D741', '#95D73F', '#97D83E', '#9AD83C', '#9DD93A', '#9FD938', '#A2DA37', '#A5DA35', '#A7DB33', '#AADB32', '#ADDC30', '#AFDC2E', '#B2DD2C', '#B5DD2B', '#B7DD29', '#BADE27', '#BDDE26', '#BFDF24', '#C2DF22', '#C5DF21', '#C7E01F', '#CAE01E', '#CDE01D', '#CFE11C', '#D2E11B', '#D4E11A', '#D7E219', '#DAE218', '#DCE218', '#DFE318', '#E1E318', '#E4E318', '#E7E419', '#E9E419', '#ECE41A', '#EEE51B', '#F1E51C', '#F3E51E', '#F6E61F', '#F8E621', '#FAE622', '#FDE724']}, epsgs={'metric': '2154', 'origin': '4326', 'vis': '3857'}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/isochrone.html#Accessibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.isochrone.Accessibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Measure accessibility on a graph (with time as weight on edges) from a
+list of points and a list of durations.</p>
+<dl class="simple">
+<dt>Inspired by:</dt><dd><p><a class="reference external" href="https://github.com/gboeing/osmnx-examples/blob/master/notebooks/13-isolines-isochrones.ipynb">https://github.com/gboeing/osmnx-examples/blob/master/notebooks/13-isolines-isochrones.ipynb</a>
+<a class="reference external" href="http://kuanbutts.com/2017/12/16/osmnx-isochrones/">http://kuanbutts.com/2017/12/16/osmnx-isochrones/</a></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Add to the class object:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Isolines:</dt><dd><ul>
+<li><p>object.lines.origin =&gt; isolines with origin EPSG</p></li>
+<li><p>object.lines.metric =&gt; isolines with metric EPSG</p></li>
+<li><p>object.lines.vis =&gt; isolines with visualisation EPSG</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Buffered isolines:</dt><dd><ul>
+<li><p>object.buffered.origin =&gt; buffered isolines with origin EPSG</p></li>
+<li><p>object.buffered.metric =&gt; buffered isolines with metric EPSG</p></li>
+<li><p>object.buffered.vis =&gt; buffered isolines with visualisation EPSG</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Union of buffered isolines by duration:</dt><dd><ul>
+<li><p>object.union.origin =&gt; union of buffered isolines with origin EPSG</p></li>
+<li><p>object.union.metric =&gt; union of buffered isolines with metric EPSG</p></li>
+<li><p>object.union.vis =&gt; union of buffered isolines with visualisation EPSG</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<ul>
+<li><dl class="simple">
+<dt>G(NetworkX graph):</dt><dd><ul class="simple">
+<li><p>Graph with time weighted edges</p></li>
+<li><p>MultiDiGraph</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>trip_times(list):</dt><dd><ul class="simple">
+<li><p>list of integer values</p></li>
+<li><p>durations value for making isochrones</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>distance_buffer(int):</dt><dd><ul class="simple">
+<li><p>value in meters for buffering isolines</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>weight(str):</dt><dd><ul class="simple">
+<li><p>name of the weight/duration field used to measure accessibility</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>center_nodes(list):</dt><dd><ul class="simple">
+<li><p>list of nodes from which to measure accessibility</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>input_polygons(Shapely Polygons):</dt><dd><ul class="simple">
+<li><p>Input polygons from which center_nodes have been deducted</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>palette(dict):</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>dict of colors:</dt><dd><p>=&gt; {1:”#hexcolor1”, 2:”hexcolor2”}</p>
+</dd>
+</dl>
+</li>
+<li><p>default: Viridis Bokeh palette</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>epsg(dict):</dt><dd><ul class="simple">
+<li><p>dict of EPSG values (origin, metric, visualisation)</p></li>
+<li><p>=&gt; metric EPSG is needed to measure buffers in meters, origin EPSG</p></li>
+</ul>
+<p>is needed to set the default and visualisation is needed to get
+elements set for webmapping (example: EPSG 3857)
+- default:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>=&gt; epsgs={</dt><dd><p>“origin”:”4326”,
+“metric”:”2154”,
+“vis”:”3857”
+}</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.Accessibility.get_results">
+<code class="sig-name descname">get_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/isochrone.html#Accessibility.get_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.isochrone.Accessibility.get_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get isolines GeoDataFrame
+Make buffered isolines (polygons)
+Make union of buffered isolines by duration
+Add these elements to the class</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.Accessibility.get_subgraph">
+<code class="sig-name descname">get_subgraph</code><span class="sig-paren">(</span><em class="sig-param">center_node</em>, <em class="sig-param">trip_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geodecision/accessibility/isochrone.html#Accessibility.get_subgraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#geodecision.accessibility.isochrone.Accessibility.get_subgraph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geodecision.accessibility.isochrone.EPSG">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.accessibility.isochrone.</code><code class="sig-name descname">EPSG</code><span class="sig-paren">(</span><em class="sig-param">origin</em>, <em class="sig-param">metric</em>, <em class="sig-param">vis</em><span class="sig-paren">)</span><a class="headerlink" href="#geodecision.accessibility.isochrone.EPSG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.EPSG.metric">
+<em class="property">property </em><code class="sig-name descname">metric</code><a class="headerlink" href="#geodecision.accessibility.isochrone.EPSG.metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.EPSG.origin">
+<em class="property">property </em><code class="sig-name descname">origin</code><a class="headerlink" href="#geodecision.accessibility.isochrone.EPSG.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.EPSG.vis">
+<em class="property">property </em><code class="sig-name descname">vis</code><a class="headerlink" href="#geodecision.accessibility.isochrone.EPSG.vis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geodecision.accessibility.isochrone.GeoData">
+<em class="property">class </em><code class="sig-prename descclassname">geodecision.accessibility.isochrone.</code><code class="sig-name descname">GeoData</code><span class="sig-paren">(</span><em class="sig-param">origin</em>, <em class="sig-param">metric</em>, <em class="sig-param">vis</em><span class="sig-paren">)</span><a class="headerlink" href="#geodecision.accessibility.isochrone.GeoData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.GeoData.metric">
+<em class="property">property </em><code class="sig-name descname">metric</code><a class="headerlink" href="#geodecision.accessibility.isochrone.GeoData.metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.GeoData.origin">
+<em class="property">property </em><code class="sig-name descname">origin</code><a class="headerlink" href="#geodecision.accessibility.isochrone.GeoData.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geodecision.accessibility.isochrone.GeoData.vis">
+<em class="property">property </em><code class="sig-name descname">vis</code><a class="headerlink" href="#geodecision.accessibility.isochrone.GeoData.vis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-geodecision.accessibility.schema">
+<span id="geodecision-accessibility-schema-module"></span><h2>geodecision.accessibility.schema module<a class="headerlink" href="#module-geodecision.accessibility.schema" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Jun 27 15:24:26 2019</p>
+<p>&#64;author: thomas</p>
+</div>
+<div class="section" id="module-geodecision.accessibility">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-geodecision.accessibility" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Dec  3 16:10:39 2019</p>
+<p>&#64;author: thomas</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">geodecision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">geodecision</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="geodecision.html">geodecision package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">geodecision</a><ul>
+  <li><a href="geodecision.html">geodecision package</a><ul>
+      <li>Previous: <a href="geodecision.html" title="previous chapter">geodecision package</a></li>
+      <li>Next: <a href="geodecision.classification.html" title="next chapter">geodecision.classification package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Leysens.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/geodecision.accessibility.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

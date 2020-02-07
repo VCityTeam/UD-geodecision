@@ -1,0 +1,134 @@
+[{
+    "name": "INSEE_gridded_data_200m",
+    "filepath": "./data/insee/Filosofi_2015_Lyon_Villeurbanne_200m_grid.geojson",
+    "variables": {
+        "Id_carr1km": {
+            "classification": false,
+            "description": "Identifiant Inspire du carreau de 1 km"
+        },
+        "Ind": {
+            "classification": true,
+            "description": "Nombre d’individus"
+        },
+        "Men": {
+            "classification": true,
+            "description": "Nombre de ménages"
+        },
+        "Men_pauv": {
+            "classification": true,
+            "description": "Nombre de ménages pauvres"
+        },
+        "Men_1ind": {
+            "classification": true,
+            "description": "Nombre de ménages d’un seul individu"
+        },
+        "Men_5ind": {
+            "classification": true,
+            "description": "Nombre de ménages de 5 individus ou plus"
+        },
+        "Men_prop": {
+            "classification": true,
+            "description": "Nombre de ménages propriétaires"
+        },
+        "Men_fmp": {
+            "classification": false,
+            "description": "Nombre de ménages monoparentaux"
+        },
+        "Ind_snv": {
+            "classification": true,
+            "description": "Somme des niveaux de vie winsorisés des individus"
+        },
+        "Men_surf": {
+            "classification": false,
+            "description": "Somme de la surface des logements du carreau"
+        },
+        "Men_coll": {
+            "classification": true,
+            "description": "Nombre de ménages en logements collectifs"
+        },
+        "Men_mais": {
+            "classification": true,
+            "description": "Nombre de ménages en maison"
+        },
+        "Log_av45": {
+            "classification": true,
+            "description": "Nombre de logements construits avant 1945"
+        },
+        "Log_45_70": {
+            "classification": true,
+            "description": "Nombre de logements construits entre 1945 et 1969"
+        },
+        "Log_70_90": {
+            "classification": true,
+            "description": "Nombre de logements construits entre 1970 et 1989"
+        },
+        "Log_ap90": {
+            "classification": true,
+            "description": "Nombre de logements construits depuis 1990"
+        },
+        "Log_inc": {
+            "classification": false,
+            "description": "Nombre de logements dont la date de construction est inconnue"
+        },
+        "Log_soc": {
+            "classification": true,
+            "description": "Nombre de logements sociaux"
+        },
+        "Ind_0_3": {
+            "classification": true,
+            "description": "Nombre d’individus de 0 à 3 ans"
+        },
+        "Ind_4_5": {
+            "classification": true,
+            "description": "Nombre d’individus de 4 à 5 ans"
+        },
+        "Ind_6_10": {
+            "classification": true,
+            "description": "Nombre d’individus de 6 à 10 ans"
+        },
+        "Ind_11_17": {
+            "classification": true,
+            "description": "Nombre d’individus de 11 à 17 ans"
+        },
+        "Ind_18_24": {
+            "classification": true,
+            "description": "Nombre d’individus de 18 à 24 ans"
+        },
+        "Ind_25_39": {
+            "classification": true,
+            "description": "Nombre d’individus de 25 à 39 ans"
+        },
+        "Ind_40_54": {
+            "classification": true,
+            "description": "Nombre d’individus de 40 à 54 ans"
+        },
+        "Ind_55_64": {
+            "classification": true,
+            "description": "Nombre d’individus de 55 à 64 ans"
+        },
+        "Ind_65_79": {
+            "classification": true,
+            "description": "Nombre d’individus de 65 à 79 ans"
+        },
+        "Ind_80p": {
+            "classification": true,
+            "description": "Nombre d’individus de 80 ans ou plus"
+        },
+        "Ind_inc": {
+            "classification": false,
+            "description": "Nombre d’individus dont l’âge est inconnu"
+        },
+        "I_pauv": {
+            "classification": false,
+            "description": "Nombre de carreaux de 200 m compris dans le carreau de 1 km qui ont été traités pour respecter la confidentialité sur le nombre de ménages pauvres"
+        },
+        "I_est_1km": {
+            "classification": false,
+            "description": "Vaut 1 si le carreau est imputé par une valeur approchée, 0 ou 2 sinon"
+        },
+        "IdINSPIRE": {
+            "classification": false,
+            "description": ""
+        }
+    }
+}]

@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>geodecision.graph.utils &#8212; geodecision 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for geodecision.graph.utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue Jun 11 16:15:41 2019</span>
+
+<span class="sd">@author: thomas</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pyproj</span> <span class="k">import</span> <span class="n">Transformer</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">LineString</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">Points</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Points&quot;</span><span class="p">,[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="reproject_points"><a class="viewcode-back" href="../../../geodecision.graph.html#geodecision.graph.utils.reproject_points">[docs]</a><span class="k">def</span> <span class="nf">reproject_points</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">epsg_in</span><span class="p">,</span> <span class="n">epsg_out</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    ------------</span>
+<span class="sd">    </span>
+<span class="sd">    Reproject points with pyproj.Transformer</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    Namedtuple Points object with:</span>
+<span class="sd">        - coordinates: tuple with 2 lists (xs and ys)</span>
+<span class="sd">        - geometry: list of Shapely Points</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    </span>
+<span class="sd">    - pts (list of tuples coordinates):</span>
+<span class="sd">        - List of coordinates</span>
+<span class="sd">        - ex: [(4.56, 45.8), (4.8, 46.29)]</span>
+<span class="sd">    - epsg_in (int):</span>
+<span class="sd">        - Input EPSG</span>
+<span class="sd">        - ex: 4326</span>
+<span class="sd">    - epsg_out (int):</span>
+<span class="sd">        - Output EPSG</span>
+<span class="sd">        - ex: 2154</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_proj</span><span class="p">(</span><span class="n">epsg_in</span><span class="p">,</span> <span class="n">epsg_out</span><span class="p">)</span>
+    <span class="n">xcoords</span><span class="p">,</span><span class="n">ycoords</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pts</span><span class="p">))</span>
+    
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">xcoords</span><span class="p">,</span> <span class="n">ycoords</span><span class="p">)</span>
+    
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+    
+    <span class="k">return</span> <span class="n">Points</span><span class="p">(</span>
+            <span class="p">[</span>
+                    <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                            <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                            <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="p">)</span>
+                    <span class="p">],</span> 
+            <span class="n">points</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_to_df"><a class="viewcode-back" href="../../../geodecision.graph.html#geodecision.graph.utils.graph_to_df">[docs]</a><span class="k">def</span> <span class="nf">graph_to_df</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">edges_path</span><span class="p">,</span> <span class="n">nodes_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    ------------</span>
+<span class="sd">    Write json files with edges and nodes</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - graph(Networkx graph): </span>
+<span class="sd">        graph with geometries</span>
+<span class="sd">    - edges_path(str): </span>
+<span class="sd">        complete path with filename for edges</span>
+<span class="sd">    - nodes_path(str): </span>
+<span class="sd">        complete path with filename for nodes</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#Get edges and write GeoJSON</span>
+    <span class="n">df_edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_pandas_edgelist</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">df_edges</span> <span class="o">=</span> <span class="n">df_edges</span><span class="p">[[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]]</span>
+    <span class="n">df_edges</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">edges_path</span><span class="p">,</span> <span class="n">force_ascii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+
+    <span class="c1">#Get nodes (get &#39;x&#39; and &#39;y&#39; for futur center_nodes operations)</span>
+    <span class="c1"># and write json to get a dict of nodes attributes</span>
+    <span class="n">l_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">l_nodes</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nodes_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="df_to_graph"><a class="viewcode-back" href="../../../geodecision.graph.html#geodecision.graph.utils.df_to_graph">[docs]</a><span class="k">def</span> <span class="nf">df_to_graph</span><span class="p">(</span>
+        <span class="n">edges_source</span><span class="p">,</span> 
+        <span class="n">nodes_source</span><span class="p">,</span> 
+        <span class="n">source</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> 
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+        <span class="n">driver</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
+        <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    ------------</span>
+<span class="sd">    Get edges and nodes json files and return G, a Networkx graph</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    Graph G</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - edges_source(str OR GeoDataframe): </span>
+<span class="sd">        complete path with filename for edges (when driver is &quot;json&quot; or &quot;shp&quot;)</span>
+<span class="sd">        OR GeoDataframe (when driver is &quot;gdf&quot;)</span>
+<span class="sd">    - nodes_source(str OR GeoDataframe): </span>
+<span class="sd">        complete path with filename for nodes (when driver is &quot;json&quot; or &quot;shp&quot;)</span>
+<span class="sd">        OR GeoDataframe (when driver is &quot;gdf&quot;)</span>
+<span class="sd">    - source(str): </span>
+<span class="sd">        name of source field</span>
+<span class="sd">        default: &quot;source&quot;</span>
+<span class="sd">    - target(str): </span>
+<span class="sd">        name of target field</span>
+<span class="sd">        default: &quot;target&quot;</span>
+<span class="sd">    - driver(str):</span>
+<span class="sd">        source file type (&quot;json&quot;, &quot;shp&quot;)</span>
+<span class="sd">        default: &quot;json&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span> 
+        <span class="n">df_edges</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">edges_source</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+        <span class="n">dict_edges</span> <span class="o">=</span> <span class="n">df_edges</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dict_edges</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span>
+                <span class="n">edges</span><span class="p">,</span> 
+                <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> 
+                <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> 
+                <span class="n">edge_attr</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nodes_source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+    
+    <span class="k">elif</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;shp&quot;</span> <span class="ow">or</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;gdf&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;shp&quot;</span><span class="p">:</span>
+            <span class="n">df_edges</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">edges_source</span><span class="p">)</span>
+            <span class="n">df_nodes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">nodes_source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df_edges</span> <span class="o">=</span> <span class="n">edges_source</span>
+            <span class="n">df_nodes</span> <span class="o">=</span> <span class="n">nodes_source</span>
+            
+        <span class="k">del</span> <span class="n">df_edges</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span>
+                <span class="n">df_edges</span><span class="p">,</span> 
+                <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> 
+                <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> 
+                <span class="n">edge_attr</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+        
+        <span class="k">del</span> <span class="n">df_nodes</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">df_nodes</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Create a dict with osmid as key and attr as value in order to </span>
+        <span class="c1">## set node attributes of the output graph</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">:</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">[</span><span class="s2">&quot;osmid&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">attr</span>
+    
+    <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;gdf&quot;</span><span class="p">:</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new_attrs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">new_attrs</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">G</span></div>
+
+<div class="viewcode-block" id="graph_with_time"><a class="viewcode-back" href="../../../geodecision.graph.html#geodecision.graph.utils.graph_with_time">[docs]</a><span class="k">def</span> <span class="nf">graph_with_time</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    ------------</span>
+<span class="sd">    Get edges and nodes json files</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    Networkx Graph with time distance based on walk distance speed</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - G (NetworkX graph):</span>
+<span class="sd">        - Graph based on OSM data (build with Osmnx library)</span>
+<span class="sd">    - distance(int):</span>
+<span class="sd">        - distance in meters that could be reached within 1 hour</span>
+<span class="sd">        - ex: 5000</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">meters_per_minute</span> <span class="o">=</span> <span class="n">distance</span><span class="o">/</span><span class="mi">60</span>
+
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">meters_per_minute</span>
+    
+    <span class="k">return</span> <span class="n">G</span></div>
+
+<div class="viewcode-block" id="graph_to_gdf_points"><a class="viewcode-back" href="../../../geodecision.graph.html#geodecision.graph.utils.graph_to_gdf_points">[docs]</a><span class="k">def</span> <span class="nf">graph_to_gdf_points</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">epsg</span><span class="p">,</span> <span class="n">get_lines</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description</span>
+<span class="sd">    ------------</span>
+<span class="sd">    From Networkx Graph nodes from OSM data, make a GeoDataFrame with Points</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    Points GeoDataFrame</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - G (NetworkX graph):</span>
+<span class="sd">        - Graph based on OSM data (build with Osmnx library)</span>
+<span class="sd">    - lat(str):</span>
+<span class="sd">        - name of column with lat coordinates</span>
+<span class="sd">    - lon(str):</span>
+<span class="sd">        - name of column with lon coordinates</span>
+<span class="sd">    - epsg(str):</span>
+<span class="sd">        - EPSG of coordinates</span>
+<span class="sd">    - get_lines(bool):</span>
+<span class="sd">        - if set to True, return points and lines GeoDataFrame</span>
+<span class="sd">        - default: False</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span>
+                            <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="p">)</span>
+                    <span class="p">),</span> 
+            <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">lon</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">lat</span><span class="p">]))</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span>
+                   
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">gdf</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s2">&quot;geometry&quot;</span><span class="p">)</span>
+    <span class="n">gdf</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;init&quot;</span><span class="p">:</span><span class="s2">&quot;epsg:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epsg</span><span class="p">)}</span>
+    
+    <span class="k">if</span> <span class="n">get_lines</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_pandas_edgelist</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">gdf</span><span class="o">.</span><span class="n">at</span><span class="p">[(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                        <span class="s2">&quot;geometry&quot;</span>
+                        <span class="p">)]</span>
+                <span class="p">)</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">gdf</span><span class="o">.</span><span class="n">at</span><span class="p">[(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                        <span class="s2">&quot;geometry&quot;</span>
+                        <span class="p">)]</span>
+                <span class="p">)</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]))</span>
+        <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">LineString</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        
+        <span class="n">gdf_lines</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">gdf_lines</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s2">&quot;geometry&quot;</span><span class="p">)</span>
+        <span class="n">gdf_lines</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;init&quot;</span><span class="p">:</span><span class="s2">&quot;epsg:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epsg</span><span class="p">)}</span>
+        <span class="k">del</span> <span class="n">gdf_lines</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">gdf_lines</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">gdf_lines</span><span class="p">[</span><span class="s2">&quot;tuple&quot;</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">gdf_lines</span>
+    
+    <span class="k">return</span> <span class="n">gdf</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">geodecision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">geodecision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Leysens.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
