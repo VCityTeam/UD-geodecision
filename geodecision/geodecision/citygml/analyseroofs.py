@@ -19,7 +19,7 @@ import os
 
 from ..logger.logger import logger
 from .categories import get_dict_color, make_cat
-from .constants import REF_VECTOR, NAMESPACES, Coords, L_coords
+from .constants import REF_VECTOR, NAMESPACES, Coords, L_coords, PUBLIC
 
 
 class GetRoofsAndSlopes:
@@ -28,7 +28,8 @@ class GetRoofsAndSlopes:
             gml_file,
             epsg_in, 
             epsg_out,
-            filename="",
+            name="",
+            out_dir="",
             palette="viridis", 
             driver="GeoJSON",
             attributes = [],
@@ -43,7 +44,7 @@ class GetRoofsAndSlopes:
         compactness (see:https://fisherzachary.github.io/public/r-output.html) 
         and minimum_width based on minimum_rotated_rectangle 
         (see: https://shapely.readthedocs.io/en/stable/manual.html#object.minimum_rotated_rectangle).
-        Write file if filename is not "". 
+        Write file if name is not "". 
         
         Returns
         --------
@@ -59,9 +60,12 @@ class GetRoofsAndSlopes:
             - EPSG in
         - epsg_out(int): 
             - EPSG out
-        - filename(str):
-            - path to the output file
+        - name(str):
+            - output file name
             - default: "" (no file is written)
+        - out_dir(str):
+            - path to the output directory
+            - default: ""
         - palette(str):
             - name of colors palette, 
             - default: "viridis",
@@ -80,11 +84,12 @@ class GetRoofsAndSlopes:
         tree = ET.parse(gml_file)
         self.root = tree.getroot()
         
-        self.filename = filename
+        self.name = name
         self.driver = driver
         self.epsg_out = epsg_out
         self.palette = palette
         self.attributes = attributes
+        self.out_dir = out_dir
 
         if self.driver == "ESRI Shapefile":
             logger.warning(
@@ -94,6 +99,13 @@ class GetRoofsAndSlopes:
                     See https://gis.stackexchange.com/a/72133
                     """
                 )
+            self.extension = ".shp"
+        elif self.driver == "GeoJSON":
+            self.extension = ".geojson"
+        elif self.driver == "GPKG":
+            self.name = ''.join(e for e in name if e.isalnum())
+            self.extension = ".gpkg"
+            
             if epsg_out == None:
                 logger.warning("For shapefile output, espg_out need to be set")
                 sys.exit()
@@ -117,6 +129,102 @@ class GetRoofsAndSlopes:
         logger.info("gml_file: {}".format(gml_file))
         
         self.get_df()
+    
+    def _normalize(self, inputs):
+        """
+        Description
+        ------------
+        
+        Normalize (remove what it is not alphanumeric)
+        
+        
+        Returns
+        --------
+        
+        A normalized Pandas Serie
+        
+        
+        Parameters
+        -----------
+        
+        - inputs(list like)
+        
+        """
+        
+        return pd.Series(
+                inputs
+                ).str.normalize(
+                        'NFKD'
+                        ).str.encode(
+                                'ascii', 
+                                errors='ignore'
+                                ).str.decode(
+                                        'utf-8'
+                                        ).str.lower()
+    
+    def _check_if_in(self, string):
+        """
+        Description
+        ------------
+        
+        Check if at least one element of a string is in self.inputs
+        
+        Returns
+        --------
+        
+        value (True if element is in self.inputs, False if not)
+        
+        
+        Parameters
+        -----------
+        
+        - string(str)
+        
+        """
+        
+        value = False
+        
+        if pd.isna(string) is False:
+            for x in string.split():
+                if x in self.inputs:
+                    value = True
+        return value
+        
+    
+    def _set_if_in(self, inputs, df, column, name):
+        """
+        Description
+        ------------
+        
+        Set the value (True or False) for a specific column and from anonther
+        column if element is in inputs
+        
+        
+        Returns
+        --------
+        
+        Dataframe
+        
+        Parameters
+        -----------
+        
+        - inputs(list like):
+            - list of reference elements
+        - df(Pandas DataFrame):
+            - DataFrame containing column to check
+        - column(str): 
+            - name of the column containing elements to compare to inputs
+        - name(str):
+            - name of the new column to create that will containing the
+            True/False 
+        
+        """
+        self.inputs = self._normalize(inputs).to_list()
+        df[column + "_format"] = self._normalize(df[column])
+        df[name] = df[column + "_format"].map(self._check_if_in)
+        df.drop([column + "_format"], axis=1, inplace=True)
+        
+        return df
         
     
     def _surface_normal(self, poly):
@@ -558,35 +666,51 @@ class GetRoofsAndSlopes:
                     )
             df_buildings["attribute"] = df_attributes["attribute"]
         
-        if self.filename != "":
+        #Set public access value to True or False
+        df_buildings = self._set_if_in(
+                PUBLIC, 
+                df_buildings, 
+                "attribute", 
+                "public_access"
+                )
+        
+        if self.name != "":
             if (self.driver == "GeoJSON") or (self.driver == "ESRI Shapefile"): 
                 #Check if file exists, delete it if so before writting it 
                 ##(necessary because of Fiona behavior with GeoJSON)
+                name_to_check = self.name + "_roofs" + self.extension
+                name_to_check = os.path.join(self.out_dir, self.name)
                 try:
-                    os.remove(self.filename)
+                    os.remove(name_to_check)
                 except OSError:
                     pass
+                name = self.name + "_roofs" + self.extension
+                name = os.path.join(self.out_dir, name)
                 gdf_roofs.to_file(
-                        self.filename+ "_roofs", 
+                        name,
                         driver=self.driver,
                         encoding="utf-8"
                         )
-                gdf_roofs.to_file(
-                        self.filename + "_grounds", 
+                name = self.name + "_grounds" + self.extension
+                name = os.path.join(self.out_dir, name)
+                gdf_grounds.to_file(
+                        name, 
                         driver=self.driver,
                         encoding="utf-8"
                         )
                 
             elif self.driver == "GPKG":
+                name = "Roofs" + self.extension
                 gdf_roofs.to_file(
-                        self.filename, 
-                        layer="roofs", 
+                        os.path.join(self.out_dir, name), 
+                        layer=self.name, 
                         driver=self.driver,
                         encoding="utf-8"
                         )
+                name = "Grounds" + self.extension
                 gdf_grounds.to_file(
-                        self.filename, 
-                        layer="grounds", 
+                        os.path.join(self.out_dir, name),
+                        layer=self.name,  
                         driver=self.driver,
                         encoding="utf-8"
                         )
@@ -595,7 +719,7 @@ class GetRoofsAndSlopes:
                        Wrong name for the output format
                        Choice between "GeoJSON", "ESRI Shapefile" and "GPKG"
                        """)
-            buildings_name = os.path.splitext(self.filename)[0] + ".json" 
+            buildings_name = os.path.splitext(self.name)[0] + ".json" 
             data = df_buildings.to_json(orient="index")
             with open(buildings_name, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)

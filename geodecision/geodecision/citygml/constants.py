@@ -18,3 +18,20 @@ NAMESPACES = {
 
 Coords = namedtuple("Coords", ["x","y","z"])
 L_coords = namedtuple("L_coords", ["xs","ys", "zs"])
+
+PUBLIC = ["église",
+          "école",
+          "université",
+          "mairie",
+          "stade",
+          "cimetière",
+          "gymnase",
+          "salle",
+          "lycée",
+          "police",
+          "clinique",
+          "collège",
+          "hôpital",
+          "hospitalier",
+          "médical"
+          ]
