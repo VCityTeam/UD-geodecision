@@ -734,7 +734,13 @@ class GetRoofsAndSlopes:
             data = df_buildings.to_json(orient="index")
             with open(buildings_name, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
-            
+        
+        self.df_buildings = df_buildings
         self.df_roofs = df_roofs
         self.gdf_roofs = gdf_roofs 
-        self.df_buildings = df_buildings
+        self.gdf_roofs = self.gdf_roofs.merge(
+                self.df_buildings, 
+                right_on="BUILDINGID",
+                left_on="building_ids", 
+                how="right"
+                )
