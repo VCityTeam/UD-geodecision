@@ -19,7 +19,7 @@ import os
 
 from ..logger.logger import logger
 from .categories import get_dict_color, make_cat
-from .constants import REF_VECTOR, NAMESPACES, Coords, L_coords, PUBLIC
+from .constants import REF_VECTOR, NAMESPACES, Coords, L_coords, PUBLIC, AVG_HEIGHT
 
 
 class GetRoofsAndSlopes:
@@ -481,12 +481,12 @@ class GetRoofsAndSlopes:
         Description
         ------------
         
-        Get grounds & ground areas
+        Get grounds positions
         
         Returns
         --------
         
-        Areas
+        
         
         Parameters
         -----------
@@ -511,7 +511,7 @@ class GetRoofsAndSlopes:
                 self.elements_ground.append(i)
                 i+=1
     
-    def _get_height(self, building, id_building):
+    def _get_height_levels(self, building, id_building):
         """
         Description
         ------------
@@ -528,10 +528,11 @@ class GetRoofsAndSlopes:
             - id of GML building
         """
         for measuredHeight in building.findall('.//ns2:measuredHeight', NAMESPACES):
-            height = measuredHeight.text
+            height = float(measuredHeight.text)
         
         self.heights[id_building] = height
-            
+        self.levels[id_building] = height//AVG_HEIGHT
+        
     
     def get_df(self):
         """
@@ -570,8 +571,8 @@ class GetRoofsAndSlopes:
         
         #Heights dict
         self.heights = {}
+        self.levels = {}
         
-        #TODO: GET HEIGHT, TOTAL SURFACE (LEVELS * GROUND SURFACE)
         dict_buildings = {}
         for building in self.root.findall('.//ns2:Building', NAMESPACES):
             dict_tmp = {}
@@ -584,7 +585,7 @@ class GetRoofsAndSlopes:
         
             self._get_roofs(building, id_building)
             self._get_grounds(building, id_building)
-            self._get_height(building, id_building)
+            self._get_height_levels(building, id_building)
             
             
         df_roofs = pd.DataFrame.from_dict(
@@ -617,8 +618,14 @@ class GetRoofsAndSlopes:
         df_roofs["colors"] = df_roofs["categories"].map(get_dict_color(choice=self.palette))
         df_roofs.sort_values(by=["angles"], ascending=False, inplace=True)
         
-        #Add heights
+        #Add heights, levels
+        ## Average level height => 2.70, source: 
+        ## https://www.lemoniteur.fr/article/les-sept-principes-a-s-approprier.1953879
+        ## WARNING: we don't have possibility to distinguish commercial/office 
+        ## buildings from apartment blocks, yet they have not the same average 
+        ## height for level***
         df_roofs["heights"] = df_roofs["building_ids"].map(self.heights)
+        df_roofs["nb_levels"] = df_roofs["building_ids"].map(self.levels)
         
         #Create GeoDataframe to make some measures
         df_roofs["geometry"] = df_roofs.apply(self._add_poly, axis=1)
@@ -627,6 +634,8 @@ class GetRoofsAndSlopes:
         gdf_roofs.drop(columns=["xs","ys","zs"], inplace=True) 
         #Get area of the roof 
         gdf_roofs["area"] = gdf_roofs.area
+        #Calculates total surface
+        gdf_roofs["total_surface"] = gdf_roofs["nb_levels"] * gdf_roofs["area"]
         #Get the convex hull ratio to get compactness ratio
         ##see: https://fisherzachary.github.io/public/r-output.html
         gdf_roofs["convex_hull_area"] = gdf_roofs.convex_hull.area
@@ -652,6 +661,8 @@ class GetRoofsAndSlopes:
                 ) 
         
         #Drop nan with subset and filter attributes
+        # ***WARNING: attributes can be problematic => 
+        # https://github.com/VCityTeam/UD-SV/tree/master/UD-Doc/LessonsLearned/WorkingWithLyonOpenData#undocummented-additional-data-***
         if self.attributes != []:
             df_attributes = df_buildings[self.attributes]
             df_attributes.dropna(
