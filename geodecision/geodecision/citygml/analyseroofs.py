@@ -534,6 +534,52 @@ class GetRoofsAndSlopes:
         self.levels[id_building] = height//AVG_HEIGHT
         
     
+    def _make_df_buildings(self, dict_buildings):
+        """
+        Description
+        ------------
+        
+
+        
+        Returns
+        --------
+
+        
+        """
+        df_buildings = pd.DataFrame.from_dict(dict_buildings, orient="index")
+        #Replace space strings
+        df_buildings.replace(" ", gpd.np.nan, inplace=True) 
+        #Drop nan
+        df_buildings.dropna(how="all", inplace=True)
+        
+        #Drop nan with subset and filter attributes
+        # ***WARNING: attributes can be problematic => 
+        # https://github.com/VCityTeam/UD-SV/tree/master/UD-Doc/LessonsLearned/WorkingWithLyonOpenData#undocummented-additional-data-***
+        if self.attributes != []:
+            df_attributes = df_buildings[self.attributes]
+            df_attributes.dropna(
+                    how="all",
+                    inplace=True
+                    )
+            df_attributes["attribute"] = df_attributes[
+                    self.attributes
+                    ].values.tolist()
+            df_attributes["attribute"] = df_attributes["attribute"].apply(
+                    lambda x:  gpd.pd.Series(x).dropna().drop_duplicates().values[0]
+                    )
+            df_buildings["attribute"] = df_attributes["attribute"]
+        
+        #Set public access value to True or False
+        df_buildings = self._set_if_in(
+                PUBLIC, 
+                df_buildings, 
+                "attribute", 
+                "public_access"
+                )
+        
+        return df_buildings
+        
+    
     def get_df(self):
         """
         Description
@@ -611,7 +657,8 @@ class GetRoofsAndSlopes:
             }
         )
         
-        df_buildings = pd.DataFrame.from_dict(dict_buildings, orient="index")
+        df_buildings = self._make_df_buildings(dict_buildings)
+#        df_buildings = pd.DataFrame.from_dict(dict_buildings, orient="index")
         
         #Get categories and colors
         df_roofs["categories"] = df_roofs["angles"].map(make_cat)
@@ -629,8 +676,24 @@ class GetRoofsAndSlopes:
         
         #Create GeoDataframe to make some measures
         df_roofs["geometry"] = df_roofs.apply(self._add_poly, axis=1)
+        #Combine with all df_buildings attributes
+        df_roofs = df_roofs.merge(
+                df_buildings, 
+                right_on=df_buildings.index,
+                left_on="building_ids", 
+                how="right"
+                )
         gdf_roofs = gpd.GeoDataFrame(df_roofs, geometry="geometry")
         gdf_roofs.crs = {"init":"epsg:{}".format(self.epsg_out)}
+        
+        #Drop duplicates and NaN geometries
+        gdf_roofs = gdf_roofs.drop_duplicates(
+                subset="geometry"
+                )
+        gdf_roofs["null_geom"] = gdf_roofs.geometry.isna()
+        gdf_roofs = gdf_roofs.loc[gdf_roofs["null_geom"] == False]
+        gdf_roofs.drop("null_geom", inplace=True, axis=1)
+        
         gdf_roofs.drop(columns=["xs","ys","zs"], inplace=True) 
         #Get area of the roof 
         gdf_roofs["area"] = gdf_roofs.area
@@ -647,11 +710,11 @@ class GetRoofsAndSlopes:
         gdf_roofs["min_width"] = gdf_roofs["geometry"].map(self._get_min_width)
         #Back to previous EPSG
         gdf_roofs = gdf_roofs.to_crs(epsg=self.epsg_out)
-        #Replace space strings
-        df_buildings.replace(" ", gpd.np.nan, inplace=True) 
-        #Drop nan
-        df_buildings.dropna(how="all", inplace=True)
-        
+#        #Replace space strings
+#        df_buildings.replace(" ", gpd.np.nan, inplace=True) 
+#        #Drop nan
+#        df_buildings.dropna(how="all", inplace=True)
+#        
         df_grounds["geometry"] = df_grounds.apply(self._add_poly, axis=1)
         gdf_grounds = gpd.GeoDataFrame(df_grounds, geometry="geometry")
         gdf_grounds.crs = {"init":"epsg:{}".format(self.epsg_out)}
@@ -660,30 +723,30 @@ class GetRoofsAndSlopes:
                 inplace=True
                 ) 
         
-        #Drop nan with subset and filter attributes
-        # ***WARNING: attributes can be problematic => 
-        # https://github.com/VCityTeam/UD-SV/tree/master/UD-Doc/LessonsLearned/WorkingWithLyonOpenData#undocummented-additional-data-***
-        if self.attributes != []:
-            df_attributes = df_buildings[self.attributes]
-            df_attributes.dropna(
-                    how="all",
-                    inplace=True
-                    )
-            df_attributes["attribute"] = df_attributes[
-                    self.attributes
-                    ].values.tolist()
-            df_attributes["attribute"] = df_attributes["attribute"].apply(
-                    lambda x:  gpd.pd.Series(x).dropna().drop_duplicates().values[0]
-                    )
-            df_buildings["attribute"] = df_attributes["attribute"]
-        
-        #Set public access value to True or False
-        df_buildings = self._set_if_in(
-                PUBLIC, 
-                df_buildings, 
-                "attribute", 
-                "public_access"
-                )
+#        #Drop nan with subset and filter attributes
+#        # ***WARNING: attributes can be problematic => 
+#        # https://github.com/VCityTeam/UD-SV/tree/master/UD-Doc/LessonsLearned/WorkingWithLyonOpenData#undocummented-additional-data-***
+#        if self.attributes != []:
+#            df_attributes = df_buildings[self.attributes]
+#            df_attributes.dropna(
+#                    how="all",
+#                    inplace=True
+#                    )
+#            df_attributes["attribute"] = df_attributes[
+#                    self.attributes
+#                    ].values.tolist()
+#            df_attributes["attribute"] = df_attributes["attribute"].apply(
+#                    lambda x:  gpd.pd.Series(x).dropna().drop_duplicates().values[0]
+#                    )
+#            df_buildings["attribute"] = df_attributes["attribute"]
+#        
+#        #Set public access value to True or False
+#        df_buildings = self._set_if_in(
+#                PUBLIC, 
+#                df_buildings, 
+#                "attribute", 
+#                "public_access"
+#                )
         
         if self.name != "":
             if (self.driver == "GeoJSON") or (self.driver == "ESRI Shapefile"): 
@@ -738,9 +801,3 @@ class GetRoofsAndSlopes:
         self.df_buildings = df_buildings
         self.df_roofs = df_roofs
         self.gdf_roofs = gdf_roofs 
-        self.gdf_roofs = self.gdf_roofs.merge(
-                self.df_buildings, 
-                right_on="BUILDINGID",
-                left_on="building_ids", 
-                how="right"
-                )

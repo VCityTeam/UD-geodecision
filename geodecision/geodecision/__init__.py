@@ -12,5 +12,5 @@ from .graph.connectpoints import ConnectPoints
 from .graph.splittednodes import GetSplitNodes
 from .graph.utils import graph_to_df, df_to_graph
 from .osmquery.methods import get_OSM_poly
-from .spatialops.operations import SpatialOperations
+from .spatialops.operations import SpatialOperations, gdf_to_geosource
 from .citygml.analyseroofs import GetRoofsAndSlopes

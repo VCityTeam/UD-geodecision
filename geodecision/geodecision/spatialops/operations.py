@@ -9,10 +9,37 @@ import time
 from shapely.ops import unary_union
 from shapely import speedups
 import geopandas as gpd
+import json
 
 from ..logger.logger import _get_duration, logger
 
 speedups.enable()
+
+#Get GeoJSON DataSource
+def gdf_to_geosource(gdf):
+    """
+    Description
+    ------------
+    
+    Transform a GeoPandas GeoDataFrame to GeoJSON object
+    
+    Returns
+    --------
+    
+    GeoJSON object
+    
+    Parameters
+    -----------
+    
+    - gdf(GeoDataFrame):
+        - GeoPandas GeoDataFrame
+    """     
+        
+    return json.dumps(
+            json.loads(
+                gdf.to_json()
+            )
+        )
 
 def get_intersect_matches(base, points):
         """
