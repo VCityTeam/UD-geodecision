@@ -106,3 +106,4 @@ ENV/
 
 # Others
 /geodecision/notebooks/UC_Parks/data
+/dashboard/data
