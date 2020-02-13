@@ -1,0 +1,25 @@
+{
+	"gdf": "dashboard/data/city_gml/GPKG/Roofs.gpkg",
+	"values":[
+	    "angles",
+	    "heights",
+	    "area",
+	    "total_surface",
+	    "min_width",
+	    "compactness"
+	],
+	"samples":100,
+	"group":"NOMCOMMUNE",
+	"layers":[
+		"LYON1ERBATI2015",
+		"LYON2EMEBATI2015",
+		"LYON3EMEBATI2015",
+		"LYON4EMEBATI2015",
+		"LYON5EMEBATI2015",
+		"LYON6EMEBATI2015",
+		"LYON7BATI2015",
+		"LYON8EMEBATI2015",
+		"LYON9EMEBATI2015",
+		"VILLEURBANNEBATI2015"
+	]
+}

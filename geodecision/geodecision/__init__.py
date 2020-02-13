@@ -14,3 +14,4 @@ from .graph.utils import graph_to_df, df_to_graph
 from .osmquery.methods import get_OSM_poly
 from .spatialops.operations import SpatialOperations, gdf_to_geosource
 from .citygml.analyseroofs import GetRoofsAndSlopes
+from .bokeh_snippets.bokeh_snippets import make_sliders, get_hist_source
