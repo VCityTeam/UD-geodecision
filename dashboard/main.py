@@ -5,12 +5,12 @@ Created on Thu Feb 13 11:53:54 2020
 
 @author: thomas
 """
-from bokeh.models import ColumnDataSource, GeoJSONDataSource
+from bokeh.models import ColumnDataSource, GeoJSONDataSource, HoverTool
 from bokeh.palettes import Viridis11
 from bokeh.transform import factor_cmap
 from bokeh.plotting import figure
 from bokeh.tile_providers import get_provider, Vendors
-from bokeh.models.widgets import Button, Select
+from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup
 from bokeh.layouts import row, widgetbox, column
 from bokeh.io import curdoc
 import json
@@ -59,6 +59,9 @@ geo_source = GeoJSONDataSource(
                 gdf.loc[gdf[group] == default]
                 )
         )
+## Source for Datatable
+table_source = ColumnDataSource(gdf[params["table_columns"]].loc[gdf[group] == default])
+
 
 #############
 # FUNCTIONS #
@@ -80,10 +83,13 @@ def update(new):
                         (tmp[k] >= start) 
                         & (tmp[k] < end)
                         ]
-                
+    
+    if radio_group.active == 0:
+        tmp = tmp.loc[tmp["public_access"] == True]
     tmp_map = tmp.loc[tmp[group] == select.value]
     hist_source.data = get_hist_source(tmp, group)
     geo_source.geojson = gdf_to_geosource(tmp_map)
+    table_source.data = tmp_map[params["table_columns"]]
     button.disabled = False
 
 def reset(new):
@@ -106,9 +112,10 @@ select = Select(
         value=default, 
         options=layers
         )
+
+#HISTOGRAM
 #Source for histogram
 hist_source = ColumnDataSource(data=get_hist_source(gdf, group)) 
-#Histogram
 hist = figure(
     x_range=hist_source.data["groups"], 
     plot_height=350, 
@@ -133,7 +140,7 @@ hist.legend.orientation = "horizontal"
 hist.legend.location = "top_center"
 hist.xaxis.major_label_orientation = 1
 
-#Map
+#MAP
 map_ = figure(
 title="Map",
 output_backend="webgl"
@@ -149,13 +156,46 @@ map_.add_tile(tile_provider)
 #Add patches
 map_.patches('xs', 'ys', color='blue', alpha=0.5, source=geo_source)
 
+#DATATABLE & Tooltips
+columns = []
+tooltips = []
+for col in params["table_columns"]:
+    columns.append(
+            TableColumn(
+                    field=col, 
+                    title=col
+                    )
+            )
+    tooltips.append(
+            (col, "@" + col)
+            )
+
+data_table = DataTable(
+        source=table_source, 
+        columns=columns,
+        height=800,
+        width=600
+        )
+
+#RADIOGROUP
+radio_group = RadioGroup(
+        labels=["Only public access buildings", "All buildings"], active=1)
+
+
+
 #Widgets
+# HOVER TOOL
+hover = HoverTool(
+        tooltips=tooltips
+        )
+map_.add_tools(hover)
+
 widgetbox(
         [x for x in sliders.values()]
     )
 button.on_click(update)
 reset_button.on_click(reset)
-widgets = [select]
+widgets = [select, radio_group]
 widgets.extend([x for x in sliders.values()])
 widgets.extend([button, reset_button])
 
@@ -169,7 +209,8 @@ layout = row(
         column(
                 hist,
                 map_
-                )
+                ),
+        column(data_table)
         )
 
 curdoc().add_root(layout)
