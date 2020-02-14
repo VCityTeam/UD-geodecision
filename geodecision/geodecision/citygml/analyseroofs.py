@@ -463,14 +463,14 @@ class GetRoofsAndSlopes:
                             """
                             RoofSurface with id {} has problematic posList at position {}: 
                             {}
-                            Angle of this will be 360 (in degrees) to highlight the problem
+                            Angle of this will be 90 (in degrees) to highlight the problem
                             """.format(
                                 id_, 
                                 i, 
                                 posList.text,
                             )
                     )
-                    self.angles.append(360.0)
+                    self.angles.append(90.0)
                 else:
                     self.angles.append(self._angle_between(vector, REF_VECTOR))
                 
