@@ -10,7 +10,7 @@ from bokeh.palettes import Viridis11
 from bokeh.transform import factor_cmap
 from bokeh.plotting import figure
 from bokeh.tile_providers import get_provider, Vendors
-from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup
+from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div
 from bokeh.layouts import row, widgetbox, column
 from bokeh.io import curdoc
 import json
@@ -24,6 +24,7 @@ if geodecision_path not in sys.path:
     sys.path.insert(0, geodecision_path)
    
 from geodecision import gdf_to_geosource, make_sliders, get_hist_source
+from constants import set_para
 
 
 #####################
@@ -60,8 +61,9 @@ geo_source = GeoJSONDataSource(
                 )
         )
 ## Source for Datatable
-table_source = ColumnDataSource(gdf[params["table_columns"]].loc[gdf[group] == default])
-
+table_source = ColumnDataSource(
+        gdf[params["table_columns"]].loc[gdf[group] == default]
+        )
 
 #############
 # FUNCTIONS #
@@ -92,9 +94,16 @@ def update(new):
     table_source.data = tmp_map[params["table_columns"]]
     button.disabled = False
 
+    para.text = set_para(
+            gdf[params["table_columns"]].loc[gdf[group] == select.value],
+            tmp_map,
+            sliders
+            )
+
 def reset(new):
     for slider in sliders.values():
         slider.value = (slider.start, slider.end)
+        
 #######################
 # WIDGETS AND FIGURES #
 #######################
@@ -173,7 +182,7 @@ for col in params["table_columns"]:
 data_table = DataTable(
         source=table_source, 
         columns=columns,
-        height=800,
+        height=400,
         width=600
         )
 
@@ -181,7 +190,12 @@ data_table = DataTable(
 radio_group = RadioGroup(
         labels=["Only public access buildings", "All buildings"], active=1)
 
-
+#PARAGRAPH
+para = Div(
+        text="""""",
+        width=600, 
+        height=400
+        )
 
 #Widgets
 # HOVER TOOL
@@ -210,7 +224,10 @@ layout = row(
                 hist,
                 map_
                 ),
-        column(data_table)
+        column(
+                para,
+                data_table
+                )
         )
 
 curdoc().add_root(layout)
