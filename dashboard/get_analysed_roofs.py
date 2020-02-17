@@ -24,30 +24,6 @@ if geodecision_path not in sys.path:
     
 from geodecision import GetRoofsAndSlopes
 
-#def _write(data, driver, pathfile):
-#    """
-#    """
-#    if (driver == "GeoJSON") or (driver == "ESRI Shapefile"): 
-#        #Check if file exists, delete it if so before writting it 
-#        ##(necessary because of Fiona behavior with GeoJSON)
-#        try:
-#            os.remove(pathfile)
-#        except OSError:
-#            pass
-#        data.to_file(
-#                pathfile,
-#                driver=driver,
-#                encoding="utf-8"
-#                )
-#        
-#    elif driver == "GPKG":
-#        data.to_file(
-#                pathfile,
-#                layer="all",  
-#                driver=driver,
-#                encoding="utf-8"
-#                )
-
 
 def run(json_config):
     """
@@ -90,20 +66,6 @@ def run(json_config):
         dfs.append(roofs.df_roofs)
         gdfs.append(roofs.gdf_roofs)
         dfs_buildings.append(roofs.df_buildings)
-    
-#    #Write single file with all data
-#    roofs = gpd.pd.concat(gdfs)
-#    if driver == "GeoJSON":
-#        extension=".geojson"
-#    elif driver == "GPKG":
-#        extension = ".gpkg"
-#    elif driver == "ESRI Shapefile":
-#        extension=".shp"
-#        
-#    name = "all_roofs" + extension
-#    pathfile = os.path.join(output_dir, name)
-#    
-#    _write(roofs, driver, pathfile)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

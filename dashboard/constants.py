@@ -6,7 +6,7 @@ Created on Fri Feb 14 18:12:36 2020
 @author: thomas
 """
                     
-def set_para(gdf, selection, sliders):
+def set_para(gdf, selection, sliders, layer):
     str_ = """
              <!DOCTYPE html>
             <html>
@@ -19,30 +19,33 @@ def set_para(gdf, selection, sliders):
             
             th, td {
               text-align: left;
-              padding: 6px;
-              font-size:10px
+              padding: 7px;
+              font-size:12px
             }
             
             tr:nth-child(even) {background-color: #7ec8ffff;}
             </style>
             </head>
             <body>
-            
-            <h4>Synthetic results</h4>
-            
-            <table>
             """
+            
+    str_ += """
+            <h4>Synthetic results for {} </h4>
+            <table>
+            """.format(layer)
+            
     nb_roofs = len(gdf)
     for k,v in sliders.items():
         str_ += """
                 <tr>
-                  <th>% of roofs with {} in range [ {} <= x < {} ]</th>
+                  <th>% of roofs <i>{}</i> filter</th>
+                  <th>{} <= x < {}</th>
                   <th><b>{} %</b></th>
                 </tr>
                 """.format(
                 k,
-                v.value[0],
-                v.value[1],
+                round(v.value[0]),
+                round(v.value[1]),
                 round(
                         len(
                                 gdf.loc[
@@ -56,6 +59,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>Number of roofs with potential</th>
+                  <th> ----------- </th>
                   <td><b>{}</b></td>
              </tr>
             """.format(
@@ -64,6 +68,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>Total number of roofs of the layer </th>
+                  <th> ----------- </th>
                   <td><b>{}</b></td>
              </tr>
             """.format(
@@ -72,6 +77,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>% of roofs with potential </th>
+                  <th> ----------- </th>
                   <td><b>{}%</b></td>
              </tr>
             """.format(
@@ -80,6 +86,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>Total roofs area (m²)</th>
+                  <th> ----------- </th>
                   <td><b>{}</b></td>
              </tr>
             """.format(
@@ -88,6 +95,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>Roofs area with potential (m²)</th>
+                  <th> ----------- </th>
                   <td><b>{}</b></td>
              </tr>
             """.format(
@@ -96,6 +104,7 @@ def set_para(gdf, selection, sliders):
     str_ += """
              <tr>
                   <th>% of potential roofs area</th>
+                  <th> ----------- </th>
                   <td><b>{}%</b></td>
              </tr>
             """.format(
@@ -104,5 +113,6 @@ def set_para(gdf, selection, sliders):
     str_ += """
             </table>
             </body>
+            </htlm>
             """
     return str_

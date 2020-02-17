@@ -5,13 +5,13 @@ Created on Thu Feb 13 11:53:54 2020
 
 @author: thomas
 """
-from bokeh.models import ColumnDataSource, GeoJSONDataSource, HoverTool
+from bokeh.models import ColumnDataSource, GeoJSONDataSource, HoverTool, Panel, Tabs
 from bokeh.palettes import Viridis11
 from bokeh.transform import factor_cmap
 from bokeh.plotting import figure
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div, ColorPicker, Slider
-from bokeh.layouts import row, widgetbox, column
+from bokeh.layouts import row, widgetbox, column, Spacer
 from bokeh.io import curdoc
 import json
 import os
@@ -36,14 +36,19 @@ json_config = sys.argv[1]
 #Load params JSON file
 with open(json_config) as f: 
     params = json.load(f)
-values = params["values"]
-samples = params["samples"]
-group = params["group"]
+values = params["figures_settings"]["values"]
+samples = params["figures_settings"]["samples"]
+group = params["figures_settings"]["group"]
 
 #Get one gdf
 gdfs = []
-for layer in params["layers"]:
-    gdfs.append(gpd.GeoDataFrame.from_file(params["gdf"], layer=layer))
+for layer in params["inputs"]["layers"]:
+    gdfs.append(
+            gpd.GeoDataFrame.from_file(
+                    params["inputs"]["roofs"],
+                    layer=layer
+                    )
+            )
 gdf = gpd.pd.concat(gdfs)
 
 #Source for map
@@ -62,24 +67,38 @@ geo_source = GeoJSONDataSource(
         )
 ## Source for Datatable
 table_source = ColumnDataSource(
-        gdf[params["table_columns"]].loc[gdf[group] == default]
+        gdf[
+                params["figure_settings"]["table_columns"]
+                ].loc[gdf[group] == default]
         )
+
+## Source for accessibility
+access = []
+for layer in params["inputs"]["accessibility"]["layers"]:
+    access.append(
+            gpd.GeoDataFrame.from_file(
+                    params["inputs"]["accessibility"]["isochrones"],
+                    layer=layer
+                    )
+            )
+access = gpd.pd.concat(access)
+access = access.to_crs(epsg=3857)
 
 ## Background layer
 background_source = GeoJSONDataSource(
         geojson=gdf_to_geosource(
-                gpd.GeoDataFrame.from_file(params["background"])
+                gpd.GeoDataFrame.from_file(params["inputs"]["background"])
                 )
         )
 
 ## Figure range
 x_range = (
-        params["figure_range"]["x_range"]["left"],
-        params["figure_range"]["x_range"]["right"]
+        params["figures_settings"]["figure_range"]["x_range"]["left"],
+        params["figures_settings"]["figure_range"]["x_range"]["right"]
         )
 y_range = (
-        params["figure_range"]["y_range"]["bottom"],
-        params["figure_range"]["y_range"]["top"]
+        params["figures_settings"]["figure_range"]["y_range"]["bottom"],
+        params["figures_settings"]["figure_range"]["y_range"]["top"]
         )
 
 #############
@@ -103,23 +122,27 @@ def update(new):
                         & (tmp[k] < end)
                         ]
     
-    if radio_group.active == 0:
+    if radio_group.active == 1:
         tmp = tmp.loc[tmp["public_access"] == True]
     tmp_map = tmp.loc[tmp[group] == select.value]
     hist_source.data = get_hist_source(tmp, group)
     geo_source.geojson = gdf_to_geosource(tmp_map)
-    table_source.data = tmp_map[params["table_columns"]]
+    table_source.data = tmp_map[params["figure_settings"]["table_columns"]]
     button.disabled = False
 
     para.text = set_para(
-            gdf[params["table_columns"]].loc[gdf[group] == select.value],
+            gdf[
+                    params["figure_settings"]["table_columns"]
+                    ].loc[gdf[group] == select.value],
             tmp_map,
-            sliders
+            sliders,
+            select.value
             )
 
 def reset(new):
     for slider in sliders.values():
         slider.value = (slider.start, slider.end)
+    radio_group.active = 0
         
 #######################
 # WIDGETS AND FIGURES #
@@ -130,7 +153,7 @@ tile_provider = get_provider(Vendors.STAMEN_TERRAIN)
 sliders = make_sliders(gdf, values, samples=samples)
 #Create buttons
 button = Button(label="Filter", button_type="success")
-reset_button = Button(label="Reset", button_type="success")
+reset_button = Button(label="Reset", button_type="warning")
 #Create color picker
 color_picker = ColorPicker(
         color="#ff4466", 
@@ -150,7 +173,8 @@ select = Select(
 hist_source = ColumnDataSource(data=get_hist_source(gdf, group)) 
 hist = figure(
     x_range=hist_source.data["groups"], 
-    plot_height=350, 
+    plot_height=400, 
+    plot_width=600,
     toolbar_location=None, 
     title="Sums by place"
 )
@@ -176,8 +200,8 @@ hist.xaxis.major_label_orientation = 1
 map_ = figure(
         title="Map",
         output_backend="webgl",
-# plot_height=plot_height,
-# plot_width=plot_width,
+        plot_height=800,
+        plot_width=800,
         x_range = x_range,
         y_range = y_range
         )
@@ -236,13 +260,13 @@ for col in params["table_columns"]:
 data_table = DataTable(
         source=table_source, 
         columns=columns,
-        height=400,
-        width=600
+        height=600,
+        width=800
         )
 
 #RADIOGROUP
 radio_group = RadioGroup(
-        labels=["Only public access buildings", "All buildings"], active=1)
+        labels=["All buildings", "Only public access buildings"], active=0)
 
 #PARAGRAPH
 para = Div(
@@ -253,7 +277,8 @@ para = Div(
 para.text = set_para(
             gdf[params["table_columns"]].loc[gdf[group] == select.value],
             gdf.loc[gdf[group] == default],
-            sliders
+            sliders,
+            select.value
             )
 
 #Widgets
@@ -273,21 +298,43 @@ widgets.extend([x for x in sliders.values()])
 widgets.extend([button, reset_button])
 widgets.extend([color_picker, back_slider])
 
+#Panels and tabs
+tab_map = Panel(
+        child=map_,
+        title="Map"
+        )
+tab_global = Panel(
+        child=column([hist, para]),
+        title="Synthesis"
+        )
+tab_tables = Panel(
+        child=data_table,
+        title="Datatables"
+        )
+tabs = Tabs(tabs=[tab_map, tab_tables, tab_global])
+
 #Layout
 layout = row(
-        column(
-                widgetbox(
-                        widgets
-                        )
-                ),
-        column(
-                hist,
-                map_
-                ),
-        column(
-                para,
-                data_table
-                )
+        widgetbox(widgets),
+        Spacer(width=50),
+        tabs
         )
+
+#Layout
+#layout = row(
+#        column(
+#                widgetbox(
+#                        widgets
+#                        )
+#                ),
+#        column(
+#                hist,
+#                map_
+#                ),
+#        column(
+#                para,
+#                data_table
+#                )
+#        )
 
 curdoc().add_root(layout)

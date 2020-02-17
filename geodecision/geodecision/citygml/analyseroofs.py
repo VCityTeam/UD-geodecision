@@ -794,6 +794,7 @@ class GetRoofsAndSlopes:
                        Choice between "GeoJSON", "ESRI Shapefile" and "GPKG"
                        """)
             buildings_name = os.path.splitext(self.name)[0] + ".json" 
+            buildings_name = os.path.join(self.out_dir, buildings_name)
             data = df_buildings.to_json(orient="index")
             with open(buildings_name, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
