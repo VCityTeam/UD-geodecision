@@ -10,7 +10,7 @@ from bokeh.palettes import Viridis11
 from bokeh.transform import factor_cmap
 from bokeh.plotting import figure
 from bokeh.tile_providers import get_provider, Vendors
-from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div
+from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div, ColorPicker, Slider
 from bokeh.layouts import row, widgetbox, column
 from bokeh.io import curdoc
 import json
@@ -65,6 +65,23 @@ table_source = ColumnDataSource(
         gdf[params["table_columns"]].loc[gdf[group] == default]
         )
 
+## Background layer
+background_source = GeoJSONDataSource(
+        geojson=gdf_to_geosource(
+                gpd.GeoDataFrame.from_file(params["background"])
+                )
+        )
+
+## Figure range
+x_range = (
+        params["figure_range"]["x_range"]["left"],
+        params["figure_range"]["x_range"]["right"]
+        )
+y_range = (
+        params["figure_range"]["y_range"]["bottom"],
+        params["figure_range"]["y_range"]["top"]
+        )
+
 #############
 # FUNCTIONS #
 #############
@@ -114,6 +131,12 @@ sliders = make_sliders(gdf, values, samples=samples)
 #Create buttons
 button = Button(label="Filter", button_type="success")
 reset_button = Button(label="Reset", button_type="success")
+#Create color picker
+color_picker = ColorPicker(
+        color="#ff4466", 
+        title="Choose buildings color:", 
+        width=200
+        )
 
 #Create select box
 select = Select(
@@ -151,19 +174,50 @@ hist.xaxis.major_label_orientation = 1
 
 #MAP
 map_ = figure(
-title="Map",
-output_backend="webgl"
+        title="Map",
+        output_backend="webgl",
 # plot_height=plot_height,
 # plot_width=plot_width,
-# x_range = x_range,
-# y_range = y_range
-)
+        x_range = x_range,
+        y_range = y_range
+        )
 
 #Add tile
 map_.add_tile(tile_provider)
 
+#Add background
+background = map_.patches(
+        "xs",
+        "ys",
+        fill_color = "black",
+        fill_alpha = 0.5,
+        line_alpha = 0.0,
+        source=background_source
+        )
+## Create linked opacity layer slider
+back_slider = Slider(
+        start=0, 
+        end=1, 
+        value=0.5, 
+        step=.1, 
+        title="Background Opacity"
+        )
+back_slider.js_link("value", background.glyph, "fill_alpha")
+
 #Add patches
-map_.patches('xs', 'ys', color='blue', alpha=0.5, source=geo_source)
+buildings = map_.patches(
+        "xs", 
+        "ys", 
+        fill_color="blue",
+        line_color="white",
+        fill_alpha = 0.5,
+        line_alpha=0.2,
+        line_width=0.5,
+        source=geo_source
+        )
+
+#Link color picker to buildings color glyph
+color_picker.js_link("color", buildings.glyph, "fill_color")
 
 #DATATABLE & Tooltips
 columns = []
@@ -196,6 +250,11 @@ para = Div(
         width=600, 
         height=400
         )
+para.text = set_para(
+            gdf[params["table_columns"]].loc[gdf[group] == select.value],
+            gdf.loc[gdf[group] == default],
+            sliders
+            )
 
 #Widgets
 # HOVER TOOL
@@ -212,6 +271,7 @@ reset_button.on_click(reset)
 widgets = [select, radio_group]
 widgets.extend([x for x in sliders.values()])
 widgets.extend([button, reset_button])
+widgets.extend([color_picker, back_slider])
 
 #Layout
 layout = row(

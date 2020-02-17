@@ -22,6 +22,7 @@
 		"LYON9EMEBATI2015",
 		"VILLEURBANNEBATI2015"
 	],
+	"background":"dashboard/data/background.geojson",
 	"table_columns":[
 		"building_ids",
 		"ADRESSE",
@@ -34,5 +35,15 @@
 		"total_surface",
 		"min_width",
 		"compactness"
-	]
+	],
+	"figure_range":{
+		"x_range":{
+			"left":531653,
+			"right":555226
+		},
+		"y_range":{
+			"bottom":5733045,
+			"top":5748192
+		}
+	}
 }
