@@ -10,7 +10,7 @@ from bokeh.palettes import Viridis11
 from bokeh.transform import factor_cmap
 from bokeh.plotting import figure
 from bokeh.tile_providers import get_provider, Vendors
-from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div, ColorPicker, Slider
+from bokeh.models.widgets import Button, Select, DataTable, TableColumn, RadioGroup, Div, ColorPicker, Slider, RangeSlider
 from bokeh.layouts import row, widgetbox, column, Spacer
 from bokeh.io import curdoc
 import json
@@ -72,15 +72,25 @@ table_source = ColumnDataSource(
                 ].loc[gdf[group] == default]
         )
 
-#TODO: add isochrone layers with color
 ## Source for accessibility
 access = {}
-for layer in params["inputs"]["accessibility"]["layers"]:
+access_slider_control = {} 
+for i,layer in enumerate(params["inputs"]["accessibility"]["layers"]):
     access[layer] = GeoJSONDataSource(
             geojson=gdf_to_geosource(
                     gpd.GeoDataFrame.from_file(
                             params["inputs"]["accessibility"]["isochrones"],
                             layer=layer
+                            ).to_crs(epsg=3857)
+                    )
+                )
+    access_slider_control[i] = layer
+
+### Get origins
+origins_source = GeoJSONDataSource(
+            geojson=gdf_to_geosource(
+                    gpd.GeoDataFrame.from_file(
+                            params["inputs"]["accessibility"]["origins"]
                             ).to_crs(epsg=3857)
                     )
                 )
@@ -144,14 +154,35 @@ def reset(new):
     for slider in sliders.values():
         slider.value = (slider.start, slider.end)
     radio_group.active = 0
-        
+    
+def get_iso_layer(attr, old, new):
+    start = int(round(iso_progression_slider.value[0]))
+    end = int(round(iso_progression_slider.value[1]))
+    for k,v in access_slider_control.items():
+        selected = map_.select_one({"name":access_slider_control[k]})
+        if k in range(start, end+1):
+            selected.visible =True
+        else:
+            selected.visible = False
+            
 #######################
 # WIDGETS AND FIGURES #
 #######################
 #Tiles
 tile_provider = get_provider(Vendors.STAMEN_TERRAIN)
 #Create sliders
+##Filter sliders
 sliders = make_sliders(gdf, values, samples=samples)
+##Iso progression slider
+keys = list(access_slider_control.keys())
+iso_progression_slider = RangeSlider(
+        start=0, 
+        end=keys[-1], 
+        step=keys[1]-keys[0], 
+        title="Isochrones progression",
+        value=(0,1)
+        )
+iso_progression_slider.on_change("value",get_iso_layer)
 #Create buttons
 button = Button(label="Filter", button_type="success")
 reset_button = Button(label="Reset", button_type="warning")
@@ -241,7 +272,11 @@ back_slider.js_link("value", background.glyph, "fill_alpha")
 color_access = "green"
 fill_alpha = params["figures_settings"]["iso_alpha"]
 access_glyphs = []
-for layer, source in access.items():
+for i, (layer, source) in enumerate(access.items()):
+    if i <= 1:
+        visible=True
+    else:
+        visible=False
     access_glyphs.append(
             map_.patches(
                 "xs", 
@@ -252,7 +287,8 @@ for layer, source in access.items():
                 line_alpha=0.0,
                 line_width=0.0,
                 source=source,
-                name=layer
+                name=layer,
+                visible=visible
                 )
             )
 ## Create linked opacity isochrones slider
@@ -261,7 +297,8 @@ iso_alpha_slider = Slider(
         end=fill_alpha, 
         value=fill_alpha, 
         step=fill_alpha, 
-        title="Iso Opacity ON/OFF"
+        title="Iso Opacity ON/OFF",
+        width = 30
         )
    
 #Link color picker and alpha slider to isochrones color glyph
@@ -279,12 +316,30 @@ buildings = map_.patches(
         line_alpha=0.2,
         line_width=0.1,
         source=geo_source,
-        name="buildings"
+        name="buildings",
+        legend_label="Roofs"
         )
 
 #Link color picker to buildings color glyph
 color_picker.js_link("color", buildings.glyph, "fill_color")
 
+#Add origins patches
+origins = map_.patches(
+        "xs", 
+        "ys", 
+        fill_color="blue",
+        line_color="white",
+        fill_alpha = 0.0,
+        line_alpha=0.5,
+        line_width=0.5,
+        source=origins_source,
+        name="origins",
+        legend_label="Origins"
+        )
+
+##Add legend (MUST BE AFTER ADDING LAYERS TO LEGEND)
+map_.legend.location = "top_right"
+map_.legend.click_policy="hide"
 
 #DATATABLE & Tooltips
 columns = []
@@ -344,18 +399,23 @@ reset_button.on_click(reset)
 widgets = [select, radio_group]
 widgets.extend([x for x in sliders.values()])
 widgets.extend([button, reset_button])
-widgets.extend(
-        [
+widgets_map = [
                 color_picker,
                 color_picker_iso,
                 back_slider,
-                iso_alpha_slider
+                iso_alpha_slider,
+                iso_progression_slider
                 ]
-        )
 
 #Panels and tabs
 tab_map = Panel(
-        child=map_,
+        child=row(
+                [
+                        map_, 
+                        Spacer(width=50),
+                        widgetbox(widgets_map)
+                        ]
+                ),
         title="Map"
         )
 tab_global = Panel(
@@ -374,22 +434,5 @@ layout = row(
         Spacer(width=50),
         tabs
         )
-
-#Layout
-#layout = row(
-#        column(
-#                widgetbox(
-#                        widgets
-#                        )
-#                ),
-#        column(
-#                hist,
-#                map_
-#                ),
-#        column(
-#                para,
-#                data_table
-#                )
-#        )
 
 curdoc().add_root(layout)
