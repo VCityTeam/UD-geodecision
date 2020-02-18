@@ -68,21 +68,22 @@ geo_source = GeoJSONDataSource(
 ## Source for Datatable
 table_source = ColumnDataSource(
         gdf[
-                params["figure_settings"]["table_columns"]
+                params["figures_settings"]["table_columns"]
                 ].loc[gdf[group] == default]
         )
 
+#TODO: add isochrone layers with color
 ## Source for accessibility
-access = []
+access = {}
 for layer in params["inputs"]["accessibility"]["layers"]:
-    access.append(
-            gpd.GeoDataFrame.from_file(
-                    params["inputs"]["accessibility"]["isochrones"],
-                    layer=layer
+    access[layer] = GeoJSONDataSource(
+            geojson=gdf_to_geosource(
+                    gpd.GeoDataFrame.from_file(
+                            params["inputs"]["accessibility"]["isochrones"],
+                            layer=layer
+                            ).to_crs(epsg=3857)
                     )
-            )
-access = gpd.pd.concat(access)
-access = access.to_crs(epsg=3857)
+                )
 
 ## Background layer
 background_source = GeoJSONDataSource(
@@ -127,12 +128,12 @@ def update(new):
     tmp_map = tmp.loc[tmp[group] == select.value]
     hist_source.data = get_hist_source(tmp, group)
     geo_source.geojson = gdf_to_geosource(tmp_map)
-    table_source.data = tmp_map[params["figure_settings"]["table_columns"]]
+    table_source.data = tmp_map[params["figures_settings"]["table_columns"]]
     button.disabled = False
 
     para.text = set_para(
             gdf[
-                    params["figure_settings"]["table_columns"]
+                    params["figures_settings"]["table_columns"]
                     ].loc[gdf[group] == select.value],
             tmp_map,
             sliders,
@@ -154,10 +155,16 @@ sliders = make_sliders(gdf, values, samples=samples)
 #Create buttons
 button = Button(label="Filter", button_type="success")
 reset_button = Button(label="Reset", button_type="warning")
-#Create color picker
+#Create color picker for buildings
 color_picker = ColorPicker(
         color="#ff4466", 
         title="Choose buildings color:", 
+        width=200
+        )
+#Create color picker for isochrones
+color_picker_iso = ColorPicker(
+        color="#ff4466", 
+        title="Choose isochrones color:", 
         width=200
         )
 
@@ -179,7 +186,8 @@ hist = figure(
     title="Sums by place"
 )
 
-hist.vbar(x="groups", 
+hist.vbar(
+       x="groups", 
        top="sums", 
        width=0.9, 
        source=hist_source, 
@@ -216,7 +224,8 @@ background = map_.patches(
         fill_color = "black",
         fill_alpha = 0.5,
         line_alpha = 0.0,
-        source=background_source
+        source=background_source,
+        name="background"
         )
 ## Create linked opacity layer slider
 back_slider = Slider(
@@ -228,7 +237,39 @@ back_slider = Slider(
         )
 back_slider.js_link("value", background.glyph, "fill_alpha")
 
-#Add patches
+#Add isochrones patches
+color_access = "green"
+fill_alpha = params["figures_settings"]["iso_alpha"]
+access_glyphs = []
+for layer, source in access.items():
+    access_glyphs.append(
+            map_.patches(
+                "xs", 
+                "ys", 
+                fill_color=color_access,
+                line_color="white",
+                fill_alpha = fill_alpha,
+                line_alpha=0.0,
+                line_width=0.0,
+                source=source,
+                name=layer
+                )
+            )
+## Create linked opacity isochrones slider
+iso_alpha_slider = Slider(
+        start=0, 
+        end=fill_alpha, 
+        value=fill_alpha, 
+        step=fill_alpha, 
+        title="Iso Opacity ON/OFF"
+        )
+   
+#Link color picker and alpha slider to isochrones color glyph
+for glyphs in access_glyphs:
+    color_picker_iso.js_link("color", glyphs.glyph, "fill_color")
+    iso_alpha_slider.js_link("value", glyphs.glyph, "fill_alpha")
+
+#Add building patches
 buildings = map_.patches(
         "xs", 
         "ys", 
@@ -236,17 +277,19 @@ buildings = map_.patches(
         line_color="white",
         fill_alpha = 0.5,
         line_alpha=0.2,
-        line_width=0.5,
-        source=geo_source
+        line_width=0.1,
+        source=geo_source,
+        name="buildings"
         )
 
 #Link color picker to buildings color glyph
 color_picker.js_link("color", buildings.glyph, "fill_color")
 
+
 #DATATABLE & Tooltips
 columns = []
 tooltips = []
-for col in params["table_columns"]:
+for col in params["figures_settings"]["table_columns"]:
     columns.append(
             TableColumn(
                     field=col, 
@@ -275,7 +318,11 @@ para = Div(
         height=400
         )
 para.text = set_para(
-            gdf[params["table_columns"]].loc[gdf[group] == select.value],
+            gdf[
+                    params["figures_settings"]["table_columns"]
+                    ].loc[
+                            gdf[group] == select.value
+                            ],
             gdf.loc[gdf[group] == default],
             sliders,
             select.value
@@ -284,7 +331,8 @@ para.text = set_para(
 #Widgets
 # HOVER TOOL
 hover = HoverTool(
-        tooltips=tooltips
+        tooltips=tooltips,
+        names = ["buildings"]
         )
 map_.add_tools(hover)
 
@@ -296,7 +344,14 @@ reset_button.on_click(reset)
 widgets = [select, radio_group]
 widgets.extend([x for x in sliders.values()])
 widgets.extend([button, reset_button])
-widgets.extend([color_picker, back_slider])
+widgets.extend(
+        [
+                color_picker,
+                color_picker_iso,
+                back_slider,
+                iso_alpha_slider
+                ]
+        )
 
 #Panels and tabs
 tab_map = Panel(

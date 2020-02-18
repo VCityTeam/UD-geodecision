@@ -1,24 +1,24 @@
 {
-	"inputs":{
-		"roofs":"dashboard/data/city_gml/GPKG/Roofs.gpkg",
-		"background":"dashboard/data/background.geojson",
-		"accessibility":{
-			"origins":"dashboard/data/parks.geojson",
-			"isochrones":"dashboard/data/iso_cut.gpkg",
-			"layers":[
-				"iso_cut_iso_1",
-				"iso_cut_iso_2",
-				"iso_cut_iso_3",
-				"iso_cut_iso_4",
-				"iso_cut_iso_5",
-				"iso_cut_iso_6",
-				"iso_cut_iso_7",
-				"iso_cut_iso_8",
-				"iso_cut_iso_9",
-				"iso_cut_iso_10"
+	"inputs": {
+		"roofs": "dashboard/data/city_gml/GPKG/Roofs.gpkg",
+		"background": "dashboard/data/background.geojson",
+		"accessibility": {
+			"origins": "dashboard/data/parks.geojson",
+			"isochrones": "dashboard/data/iso_cut.gpkg",
+			"layers": [
+				"iso_1",
+				"iso_2",
+				"iso_3",
+				"iso_4",
+				"iso_5",
+				"iso_6",
+				"iso_7",
+				"iso_8",
+				"iso_9",
+				"iso_10"
 			]
 		},
-		"layers":[
+		"layers": [
 			"LYON1ERBATI2015",
 			"LYON2EMEBATI2015",
 			"LYON3EMEBATI2015",
@@ -29,30 +29,30 @@
 			"LYON8EMEBATI2015",
 			"LYON9EMEBATI2015",
 			"VILLEURBANNEBATI2015"
-		],
+		]
 	},
-	"figures_settings":{
-		"figure_range":{
-			"x_range":{
-				"left":535140,
-				"right":547883
+	"figures_settings": {
+		"figure_range": {
+			"x_range": {
+				"left": 535140,
+				"right": 547883
 			},
-			"y_range":{
-				"bottom":5735333,
-				"top":5746576
+			"y_range": {
+				"bottom": 5735333,
+				"top": 5746576
 			}
 		},
-		"values":[
-		    "angles",
-		    "heights",
-		    "area",
-		    "total_surface",
-		    "min_width",
-		    "compactness"
+		"values": [
+			"angles",
+			"heights",
+			"area",
+			"total_surface",
+			"min_width",
+			"compactness"
 		],
-		"samples":100,
-		"group":"NOMCOMMUNE",
-		"table_columns":[
+		"samples": 100,
+		"group": "NOMCOMMUNE",
+		"table_columns": [
 			"building_ids",
 			"ADRESSE",
 			"attribute",
@@ -65,5 +65,6 @@
 			"min_width",
 			"compactness"
 		],
+		"iso_alpha":0.1
 	}
 }
