@@ -1,0 +1,70 @@
+{
+	"inputs": {
+		"roofs": "data/Dashboard/Roofs.gpkg",
+		"background": "background.geojson",
+		"accessibility": {
+			"origins": "data/Dashboard/parks.geojson",
+			"isochrones": "data/Dashboard/iso_cut.gpkg",
+			"layers": [
+				"iso_1",
+				"iso_2",
+				"iso_3",
+				"iso_4",
+				"iso_5",
+				"iso_6",
+				"iso_7",
+				"iso_8",
+				"iso_9",
+				"iso_10"
+			]
+		},
+		"layers": [
+			"LYON1ERBATI2015",
+			"LYON2EMEBATI2015",
+			"LYON3EMEBATI2015",
+			"LYON4EMEBATI2015",
+			"LYON5EMEBATI2015",
+			"LYON6EMEBATI2015",
+			"LYON7BATI2015",
+			"LYON8EMEBATI2015",
+			"LYON9EMEBATI2015",
+			"VILLEURBANNEBATI2015"
+		]
+	},
+	"figures_settings": {
+		"figure_range": {
+			"x_range": {
+				"left": 535140,
+				"right": 547883
+			},
+			"y_range": {
+				"bottom": 5735333,
+				"top": 5746576
+			}
+		},
+		"values": [
+			"angles",
+			"heights",
+			"area",
+			"total_surface",
+			"min_width",
+			"compactness"
+		],
+		"samples": 100,
+		"group": "NOMCOMMUNE",
+		"table_columns": [
+			"building_ids",
+			"ADRESSE",
+			"attribute",
+			"public_access",
+			"angles",
+			"heights",
+			"nb_levels",
+			"area",
+			"total_surface",
+			"min_width",
+			"compactness"
+		],
+		"iso_alpha":0.1
+	}
+}
