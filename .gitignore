@@ -107,4 +107,4 @@ ENV/
 # Others
 /geodecision/notebooks/UC_Parks/data
 /dashboard/data
-/FormatAndAnalyseRoofs/data
+/docker/FormatAndAnalyseRoofs/data
