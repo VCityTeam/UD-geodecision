@@ -1,0 +1,23 @@
+{
+	"epsg": {
+		"in":3946,
+		"out":3946
+	},
+	"dir":{
+		"input":"data/CityGML/",
+		"output":"data/outputs/"
+	},
+	"settings":{
+		"palette":"viridis",
+		"driver":"GPKG",
+		"attributes":[
+			"ADMINISTRA",
+		    "CULTE",
+		    "DEPLACEMEN",
+		    "ENSEIGNEME",
+		    "SANTE",
+		    "SPORT",
+		    "URGENCE"
+		]
+	}
+}

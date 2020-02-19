@@ -340,6 +340,9 @@ origins = map_.patches(
 ##Add legend (MUST BE AFTER ADDING LAYERS TO LEGEND)
 map_.legend.location = "top_right"
 map_.legend.click_policy="hide"
+map_.legend.background_fill_alpha = 0.7
+map_.legend.background_fill_color = "black"
+map_.legend.label_text_color = "white"
 
 #DATATABLE & Tooltips
 columns = []
