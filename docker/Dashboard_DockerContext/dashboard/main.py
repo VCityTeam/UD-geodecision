@@ -33,6 +33,8 @@ from constants import set_para
 #Get json_config from arg
 json_config = sys.argv[1]
 
+print ("JSON", json_config)
+
 #Load params JSON file
 with open(json_config) as f: 
     params = json.load(f)
