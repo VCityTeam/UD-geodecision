@@ -17,11 +17,10 @@ text = """
 Get analysed roofs files
 """
 
-#geodecision_path = os.path.abspath("./")
+#geodecision_path = os.path.abspath("../geodecision/")
 #
 #if geodecision_path not in sys.path:
 #    sys.path.insert(0, geodecision_path)
-#    print ("PATH", geodecision_path)
     
 from geodecision import GetRoofsAndSlopes
 

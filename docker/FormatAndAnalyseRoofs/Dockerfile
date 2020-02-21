@@ -15,8 +15,8 @@ RUN conda env create -f env.yml
 #Get the CityGML files on NextCloud, donwload them, unzip them into data
 RUN mkdir data
 RUN mkdir /data/outputs
-RUN wget https://box.liris.cnrs.fr/s/S6pxYb4kEmzCFgt/download && unzip download -d /data && rm download
-
+#RUN wget https://box.liris.cnrs.fr/s/S6pxYb4kEmzCFgt/download && unzip download -d /data && rm download
+RUN wget https://box.liris.cnrs.fr/s/RpLmwooKtXzSmCR/download && unzip download -d /data && rm download
 
 # The code to run when container is started:
 COPY geodecision .

@@ -3,7 +3,17 @@ import json
 import os
 import shutil
 
-subprocess.call(["conda", "run", "-n", "osm_query_env", "python", "run.py", "/Input/config.json"])
+subprocess.call(
+        [
+                "conda", 
+                "run", 
+                "-n", 
+                "osm_query_env", 
+                "python", 
+                "run.py", 
+                "/Input/config.json"
+                ]
+        )
 
 json_config=os.path.join('/Input', 'config.json')
 with open(json_config) as f: 

@@ -4,7 +4,7 @@
 		"out":3946
 	},
 	"dir":{
-		"input":"data/CityGML/",
+		"input":"data/test/",
 		"output":"data/outputs/"
 	},
 	"settings":{

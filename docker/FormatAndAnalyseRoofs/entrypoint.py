@@ -18,7 +18,12 @@ subprocess.call(
 json_config=os.path.join('/Input', 'config.json')
 with open(json_config) as f: 
    params = json.load(f)
-   output_file = params["dir"]["output"]
-   target_output_file = os.path.join('/Output', output_file)
-if os.path.isfile(output_file):
-   shutil.copyfile(output_file, target_output_file)
+   output_dir = params["dir"]["output"]
+   target_output_dir = os.path.join("/Output", output_dir)
+for file in os.listdir(output_dir):
+   print ("FILE", file)
+#   target_name = os.path.join(target_output_dir, file)
+#   shutil.copyfile(file, target_name)   
+#shutil.rmtree(target_output_dir)
+#shutil.copytree(output_dir, "/Output")
+print ("TARGET", target_output_dir)

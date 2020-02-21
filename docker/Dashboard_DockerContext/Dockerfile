@@ -23,5 +23,7 @@ COPY main.py .
 COPY constants.py .
 COPY entrypoint.py .
 COPY background.geojson .
-ENTRYPOINT ["python", "/entrypoint.py"]
-RUN bokeh serve . --args bokeh_config.json
+COPY bokeh_config.json .
+#ENTRYPOINT ["python", "/entrypoint.py"]
+CMD ["bokeh", "serve","main.py", "--args", "bokeh_config.json"]
+#RUN bokeh serve main.py --args bokeh_config.json
