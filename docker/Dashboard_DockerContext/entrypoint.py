@@ -9,10 +9,11 @@ subprocess.call(
                 "run", 
                 "-n", 
                 "geodecision", 
-                "python", 
-                "main.py", 
+#                "python", 
+#                "main.py", 
                 "bokeh",
                 "serve",
+                "main.py",
                 "/Input/bokeh_config.json"
                 ]
         )
