@@ -438,4 +438,6 @@ layout = row(
         tabs
         )
 
+print ("RUNNING")
+
 curdoc().add_root(layout)

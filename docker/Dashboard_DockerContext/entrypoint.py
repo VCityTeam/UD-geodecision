@@ -8,12 +8,11 @@ subprocess.call(
                 "conda", 
                 "run", 
                 "-n", 
-                "geodecision", 
-#                "python", 
-#                "main.py", 
+                "geodecision",
                 "bokeh",
                 "serve",
-                "main.py",
+                "dashboard",
+                "--args",
                 "/Input/bokeh_config.json"
                 ]
         )

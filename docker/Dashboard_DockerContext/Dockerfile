@@ -12,18 +12,16 @@ FROM continuumio/miniconda3
 RUN apt-get install unzip
 COPY env.yml .
 RUN conda env create -f env.yml
-#Get the Dashboard files on NextCloud, donwload them, unzip them into data
-RUN mkdir data
-RUN wget https://box.liris.cnrs.fr/s/Z9GKRqFP6rw9D9F/download && unzip download -d /data && rm download
-
 
 # The code to run when container is started:
 COPY geodecision .
-COPY main.py .
-COPY constants.py .
 COPY entrypoint.py .
 COPY background.geojson .
 COPY bokeh_config.json .
-#ENTRYPOINT ["python", "/entrypoint.py"]
-CMD ["bokeh", "serve","main.py", "--args", "bokeh_config.json"]
-#RUN bokeh serve main.py --args bokeh_config.json
+WORKDIR /dashboard
+COPY . /dashboard
+#Get the Dashboard files on NextCloud, donwload them, unzip them into data
+RUN mkdir /dashboard/data
+RUN wget https://box.liris.cnrs.fr/s/Z9GKRqFP6rw9D9F/download && unzip download -d /dashboard/data && rm download
+EXPOSE 5006
+ENTRYPOINT ["python", "/entrypoint.py"]
