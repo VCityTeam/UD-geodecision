@@ -1,10 +1,10 @@
 {
 	"inputs": {
-		"roofs": "data/Dashboard/Roofs.gpkg",
+		"roofs": "dashboard/data/Dashboard/Roofs.gpkg",
 		"background": "background.geojson",
 		"accessibility": {
-			"origins": "data/Dashboard/parks.geojson",
-			"isochrones": "data/Dashboard/iso_cut.gpkg",
+			"origins": "dashboard/data/Dashboard/parks.geojson",
+			"isochrones": "dashboard/data/Dashboard/iso_cut.gpkg",
 			"layers": [
 				"iso_1",
 				"iso_2",

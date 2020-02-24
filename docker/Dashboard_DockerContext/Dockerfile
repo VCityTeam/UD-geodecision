@@ -22,6 +22,4 @@ ADD dashboard ./dashboard
 #Get the Dashboard files on NextCloud, download them, unzip them into data
 RUN mkdir /dashboard/data
 RUN wget https://box.liris.cnrs.fr/s/Z9GKRqFP6rw9D9F/download && unzip download -d /dashboard/data && rm download
-#EXPOSE 5006
 ENTRYPOINT ["python", "/entrypoint.py"]
-#CMD ["conda","run","-n","geodecision","bokeh","serve","--show","--allow-websocket-origin=localhost:5006","/dashboard", "--args", "/Input/bokeh_config.json"]

@@ -18,10 +18,10 @@ import os
 import sys
 import geopandas as gpd
 
-#geodecision_path = os.path.abspath("./geodecision/")
-#
-#if geodecision_path not in sys.path:
-#    sys.path.insert(0, geodecision_path)
+geodecision_path = os.path.abspath(".")
+
+if geodecision_path not in sys.path:
+    sys.path.insert(0, geodecision_path)
    
 from geodecision import gdf_to_geosource, make_sliders, get_hist_source
 from constants import set_para
