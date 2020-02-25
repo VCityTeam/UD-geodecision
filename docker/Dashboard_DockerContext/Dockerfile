@@ -9,10 +9,13 @@ FROM continuumio/miniconda3
 #     - https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually
 #     - https://pythonspeed.com/articles/activate-conda-dockerfile/)
 
+# Install unzip to manage the files that will be downloaded
 RUN apt-get install unzip
-ADD geodecision ./geodecision
-#COPY env.yml .
-RUN conda env create -f ./geodecision/env_test.yml
+#ADD geodecision ./geodecision
+# Retrieve UD-geodecision's code (some git credentials are expected)
+ARG git_token
+RUN git clone https://$git_token@github.com/VCityTeam/UD-geodecision.git
+RUN conda env create -f ./UD-geodecision/geodecision/env.yml
 
 # The code to run when container is started:
 COPY entrypoint.py .
