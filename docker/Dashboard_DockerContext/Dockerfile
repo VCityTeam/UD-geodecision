@@ -10,11 +10,11 @@ FROM continuumio/miniconda3
 #     - https://pythonspeed.com/articles/activate-conda-dockerfile/)
 
 RUN apt-get install unzip
-COPY env.yml .
-RUN conda env create -f env.yml
+ADD geodecision ./geodecision
+#COPY env.yml .
+RUN conda env create -f ./geodecision/env_test.yml
 
 # The code to run when container is started:
-COPY geodecision .
 COPY entrypoint.py .
 COPY background.geojson .
 COPY bokeh_config.json .
