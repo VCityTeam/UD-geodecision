@@ -43,10 +43,10 @@ We choose to install it through the creation of a **conda virtual environment** 
     ```bash
     conda activate geodecision
     ```
-2. You can use your IDE, Jupyter notebooks, *etc* ... inside this environnement via Anaconda tools or your favorite tools.
+2. You can use your IDE, Jupyter notebooks, *etc* ... inside this environnement via Anaconda tools or your favorite tools. You, of course, have to install these tools within this environment or connect them to it.
 
 #### Future developments
-We will certainly, for the future releases, develop a Conda package to make installation of our package simpler. But our package is still on a beta version and the [build of a Conda package](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html) from a local package may require some time and improvements.  
+We will certainly, for the future releases, develop a Conda package to make installation of our package simpler. But our package is still on a beta version and the [build of a Conda package](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html) from a local package may require some time and improvements. If we want to build a pip install ready package, it will demand to make detailed instructions for each OS to avoid spatial dependencies installation problems (*it could be really difficult regarding the OS and the existing environment*).  
 
 ### Architecture
 #### Python geodecision module and sub-modules
