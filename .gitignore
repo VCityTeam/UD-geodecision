@@ -108,3 +108,6 @@ ENV/
 /geodecision/notebooks/UC_Parks/data
 /dashboard/data
 /docker/FormatAndAnalyseRoofs/data
+
+# Log
+*activity.log
