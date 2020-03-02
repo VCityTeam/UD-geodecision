@@ -410,11 +410,11 @@ def run(json_params):
     
     #Write files
     start = time.time()    
-    write_results(
-            results, 
-            output_folder=output_folder, 
-            output_format=output_format
-            )
+#    write_results(
+#            results, 
+#            output_folder=output_folder, 
+#            output_format=output_format
+#            )
     
     logger.info(
                 """"
