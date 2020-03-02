@@ -142,12 +142,15 @@ def write_results(results, output_folder, output_format="geopackage"):
         erase_file(name)
         
         for layer, data in results.items():
-            data.to_file(
-                    name,
-                    layer = layer,
-                    driver="GPKG",
-                    encoding=encoding
-                    )
+            #Write only if existing geometry
+            if hasattr(data, "columns"):
+                if "geometry" in data.columns:
+                    data.to_file(
+                            name,
+                            layer = layer,
+                            driver="GPKG",
+                            encoding=encoding
+                            )
         
 
 def run(json_params):
@@ -410,11 +413,11 @@ def run(json_params):
     
     #Write files
     start = time.time()    
-#    write_results(
-#            results, 
-#            output_folder=output_folder, 
-#            output_format=output_format
-#            )
+    write_results(
+            results, 
+            output_folder=output_folder, 
+            output_format=output_format
+            )
     
     logger.info(
                 """"
