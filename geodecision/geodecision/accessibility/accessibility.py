@@ -147,7 +147,7 @@ def write_results(results, output_folder, output_format="geopackage"):
                 if "geometry" in data.columns:
                     data.to_file(
                             name,
-                            layer = layer,
+                            layer = str(layer),
                             driver="GPKG",
                             encoding=encoding
                             )
