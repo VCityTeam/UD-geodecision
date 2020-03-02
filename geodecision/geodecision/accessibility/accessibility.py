@@ -25,7 +25,7 @@ import networkx as nx
 from ..logger.logger import logger, _get_duration
 from .schema import ACCESS_SCHEMA
 from .isochrone import Accessibility
-from ..graph.utils import graph_to_gdf_points, df_to_graph
+from ..graph.utils import graph_to_gdf_points, df_to_graph, graph_to_df
 from ..graph.splittednodes import GetSplitNodes
 from ..graph.connectpoints import ConnectPoints
 from ..spatialops.operations import SpatialOperations
@@ -116,25 +116,26 @@ def write_results(results, output_folder, output_format="geopackage"):
         driver = "GeoJSON"
         
         for layer, data in results.items():
-            if not isinstance(data, nx.Graph):
-                name = os.path.join(
-                            output_folder, 
-                            str(layer) + extension
-                            )
-                #Delete file if already exist to avoid errors
-                erase_file(name)
-                #Delete columns containing lists before writing
-                data = delete_list_cols(data)
-                
-                try:
-                    data.to_file(
-                            name, 
-                            driver=driver,
-                            encoding=encoding
-                            )
-                except:
-                    cant_write = "CAN'T WRITE FILE: " + str(layer)
-                    logger.info(cant_write)
+            if hasattr(data, "columns"):
+                if "geometry" in data.columns:
+                    name = os.path.join(
+                                output_folder, 
+                                str(layer) + extension
+                                )
+                    #Delete file if already exist to avoid errors
+                    erase_file(name)
+                    #Delete columns containing lists before writing
+                    data = delete_list_cols(data)
+                    
+                    try:
+                        data.to_file(
+                                name, 
+                                driver=driver,
+                                encoding=encoding
+                                )
+                    except:
+                        cant_write = "CAN'T WRITE FILE: " + str(layer)
+                        logger.info(cant_write)
         
     elif output_format == "geopackage":
         name = os.path.join(output_folder, "output.gpkg")
@@ -411,13 +412,28 @@ def run(json_params):
                 )
                 )    
     
-    #Write files
+    #Write spatial outputs
     start = time.time()    
     write_results(
             results, 
             output_folder=output_folder, 
             output_format=output_format
             )
+    
+    #Write updated graph files (nodes and edges)
+    graph_to_df(
+            results["updated_graph"], 
+            os.path.join(output_folder, "updated_edges.json"), 
+            os.path.join(output_folder, "updated_nodes.json")
+            )
+    
+    #Write problematic nodes
+    with open(os.path.join(output_folder, "problematic_nodes.json"),"w") as f:
+        json.dump(
+                gpd.pd.DataFrame(
+                        results["problematic_nodes"]
+                        ).to_json(orient="records"), f
+                )
     
     logger.info(
                 """"
