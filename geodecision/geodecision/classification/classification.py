@@ -144,6 +144,7 @@ class ClassificationDataFrames:
                     element["name"] + "_classified" + extension
                     )
             
+            #Write geospatial classified file
             if layer: 
                 self.dict_[element["name"]]["gdf"].to_file(
                         filepath, 
@@ -155,6 +156,15 @@ class ClassificationDataFrames:
                         filepath, 
                         driver=driver
                         )
+                
+            #Write results of classification (logs)
+            classif_log = os.path.join(
+                    output_dir,
+                    element["name"] + "_classification_log.json"
+                    )
+            with open(classif_log, "w") as f:
+                json.dump(vars_classification, f)
+            
     
     def _get_interval(self, bins):
         """
