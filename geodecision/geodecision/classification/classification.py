@@ -10,6 +10,9 @@ import json
 import geopandas as gpd
 import mapclassify as mc
 import os
+import time
+
+from ..logger.logger import logger, _get_duration
 
 #from constants_vars import gridded_data_var
 
@@ -111,12 +114,28 @@ class ClassificationDataFrames:
             
             for variable in element["variables"]:
                 if element["variables"][variable]["classification"] is True:
-                    
+                    start = time.time()
                     vars_classification[
                             variable
                             ] = self._get_best_classification(
                     gdf[variable]
                     )
+                    
+                    logger.info(
+                            "Element {}, variable {}, duration => {}".format(
+                                    element["name"],
+                                    variable,
+                                    _get_duration(start)
+                                    )
+                            )
+                    
+                    print(
+                            "Element {}, variable {}, duration => {}".format(
+                                    element["name"],
+                                    variable,
+                                    _get_duration(start)
+                                    )
+                            )
 
             if element["name"] in self.dict_:
                 self.dict_[element["name"]].update(vars_classification) 
@@ -130,13 +149,7 @@ class ClassificationDataFrames:
             
             filepath = os.path.join(
                     output_dir,
-                    os.path.splitext(
-                            element["filepath"]
-                            )[0] + "_classified" + extension
-                    )
-            print(output_dir, os.path.splitext(
-                            element["filepath"]
-                            )[0] + "_classified" + extension
+                    element["name"] + "_classified" + extension
                     )
             
             if layer: 
