@@ -163,16 +163,16 @@ class ClassificationDataFrames:
                     element["name"] + "_classification_log.json"
                     )
             
-#            vars_classification_export = {}
-#            for k,v in vars_classification.items():
-#                vars_classification_export[k] = {
-#                        "results":v["results"],
-#                        "best":v["best"]["name"]
-#                        }
-#                
-#            with open(classif_log, "w") as f:
-#                json.dump(vars_classification_export, f)
-        self.test = vars_classification
+            vars_classification_export = {}
+            for k,v in vars_classification.items():
+                if "results" in v.keys():
+                    vars_classification_export[k] = {
+                            "results":v["results"],
+                            "best":v["best"]["name"]
+                            }
+                
+            with open(classif_log, "w") as f:
+                json.dump(vars_classification_export, f)
     
     def _get_interval(self, bins):
         """
