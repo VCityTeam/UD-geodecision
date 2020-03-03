@@ -162,8 +162,16 @@ class ClassificationDataFrames:
                     output_dir,
                     element["name"] + "_classification_log.json"
                     )
+            
+            vars_classification_export = {}
+            for k,v in vars_classification.items():
+                vars_classification_export[k] = {
+                        "results":v["results"],
+                        "best":v["best"]["name"]
+                        }
+                
             with open(classif_log, "w") as f:
-                json.dump(vars_classification, f)
+                json.dump(vars_classification_export, f)
             
     
     def _get_interval(self, bins):
