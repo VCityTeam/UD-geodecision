@@ -134,6 +134,10 @@ class ClassificationDataFrames:
                             element["filepath"]
                             )[0] + "_classified" + extension
                     )
+            print(output_dir, os.path.splitext(
+                            element["filepath"]
+                            )[0] + "_classified" + extension
+                    )
             
             if layer: 
                 self.dict_[element["name"]]["gdf"].to_file(
