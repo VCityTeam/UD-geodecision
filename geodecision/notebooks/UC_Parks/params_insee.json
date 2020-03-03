@@ -1,6 +1,8 @@
 [{
     "name": "INSEE_gridded_data_200m",
-    "filepath": "./data/insee/Filosofi_2015_Lyon_Villeurbanne_200m_grid.geojson",
+    "filepath": "Filosofi_2015_Lyon_Villeurbanne_200m_grid.geojson",
+    "output_dir": "outputs",
+    "driver": "GPKG",
     "variables": {
         "Id_carr1km": {
             "classification": false,

@@ -95,11 +95,21 @@ class ClassificationDataFrames:
         self.dict_ = {}
         
         for element in params:
-            print ("ELEMENT",element["name"])
             vars_classification = {}
             gdf = gpd.GeoDataFrame.from_file(element["filepath"])
+            output_dir = element["output_dir"]
+            driver = element["driver"]
+            if driver == "GPKG":
+                extension = ".gpkg"
+                layer = "classified"
+            elif driver == "GeoJSON":
+                extension = ".geojson"
+            else:
+                raise ValueError("No driver, written with default: GPKG")
+                extension = ".gpkg"
+                layer = "classified"
+            
             for variable in element["variables"]:
-                print ("VARIABLE", variable)
                 if element["variables"][variable]["classification"] is True:
                     
                     vars_classification[
@@ -118,10 +128,24 @@ class ClassificationDataFrames:
                     element["name"] 
                     )
             
-            filepath = os.path.splitext(
-                    element["filepath"]
-                    )[0] + "_classified.geojson" 
-            self.dict_[element["name"]]["gdf"].to_file(filepath, driver="GeoJSON")
+            filepath = os.path.join(
+                    output_dir,
+                    os.path.splitext(
+                            element["filepath"]
+                            )[0] + "_classified" + extension
+                    )
+            
+            if layer: 
+                self.dict_[element["name"]]["gdf"].to_file(
+                        filepath, 
+                        layer=layer,
+                        driver=driver
+                        )
+            else:
+                self.dict_[element["name"]]["gdf"].to_file(
+                        filepath, 
+                        driver=driver
+                        )
     
     def _get_interval(self, bins):
         """
