@@ -128,14 +128,6 @@ class ClassificationDataFrames:
                                     _get_duration(start)
                                     )
                             )
-                    
-                    print(
-                            "Element {}, variable {}, duration => {}".format(
-                                    element["name"],
-                                    variable,
-                                    _get_duration(start)
-                                    )
-                            )
 
             if element["name"] in self.dict_:
                 self.dict_[element["name"]].update(vars_classification) 
