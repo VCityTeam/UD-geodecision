@@ -137,28 +137,28 @@ class ClassificationDataFrames:
                                     _get_duration(start)
                                     )
                             )
-                    if "results" in vars_classification[variable].keys():
-                        info = """
-                               ===============
-                               {}
-                               ===============
-                               
-                               Results:
-                                   {}
-                                   
-                               ---------------
-                               
-                               Best:
-                                   {}
-                               
-                                --------------
-                                
-                               """.format(
-                               variable, 
-                               vars_classification.values()["results"],
-                               vars_classification.values()["best"]["name"]
-                               )
-                        logger.info(info)
+#                    if "results" in vars_classification[variable].keys():
+#                        info = """
+#                               ===============
+#                               {}
+#                               ===============
+#                               
+#                               Results:
+#                                   {}
+#                                   
+#                               ---------------
+#                               
+#                               Best:
+#                                   {}
+#                               
+#                                --------------
+#                                
+#                               """.format(
+#                               variable, 
+#                               vars_classification.values()["results"],
+#                               vars_classification.values()["best"]["name"]
+#                               )
+#                        logger.info(info)
 
             if element["name"] in self.dict_:
                 self.dict_[element["name"]].update(vars_classification) 
