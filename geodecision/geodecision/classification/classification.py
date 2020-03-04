@@ -170,7 +170,7 @@ class ClassificationDataFrames:
                             "results":v["results"],
                             "best":v["best"]["name"]
                             }
-            return vars_classification_export    
+            self.test =  vars_classification_export    
 #            with open(classif_log, "w") as f:
 #                json.dump(vars_classification_export, f)
     
