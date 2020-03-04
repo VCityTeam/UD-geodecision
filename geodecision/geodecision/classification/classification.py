@@ -99,14 +99,16 @@ class ClassificationDataFrames:
         self.dict_ = {}
         
         #Set a specific logger classifications results
-        logname = os.path.join(params[0]["output_dir"], "classfications.log")
-        logging.basicConfig(filename=logname,
-                                    filemode="a",
-                                    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-                                    datefmt="%H:%M:%S",
-                                    level=logging.DEBUG)
-        
         logger = logging.getLogger("Classification")
+        logname = os.path.join(params[0]["output_dir"], "classfications.log")
+        logger.basicConfig(
+                filename=logname,
+                filemode="a",
+                format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+                datefmt="%H:%M:%S",
+                level=logging.DEBUG
+                )
+        
         
         for element in params:
             vars_classification = {}
