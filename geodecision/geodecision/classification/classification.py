@@ -13,7 +13,7 @@ import os
 import time
 import logging
 
-from ..logger.logger import _get_duration
+from ..logger.logger import _get_duration, RotatingFileHandler
 
 #from constants_vars import gridded_data_var
 
@@ -100,7 +100,7 @@ class ClassificationDataFrames:
         
         #Set a specific logger for classifications results
         logname = os.path.join(params[0]["output_dir"], "classifications.log")
-        file_handler = logging.FileHandler(logname, 'a')
+        file_handler = RotatingFileHandler(logname, 'a', 1000000, 1)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
         logger = logging.getLogger()
@@ -137,7 +137,7 @@ class ClassificationDataFrames:
                                     _get_duration(start)
                                     )
                             )
-                    if "results" in vars_classification.values():
+                    if "results" in vars_classification[variable].keys():
                         info = """
                                ===============
                                {}
@@ -187,7 +187,9 @@ class ClassificationDataFrames:
                         filepath, 
                         driver=driver
                         )
-                
+            
+            #TODO: remove after tests
+            self.test = vars_classification
     
     def _get_interval(self, bins):
         """
