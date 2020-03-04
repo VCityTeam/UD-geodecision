@@ -11,8 +11,9 @@ import geopandas as gpd
 import mapclassify as mc
 import os
 import time
+import logging
 
-from ..logger.logger import logger, _get_duration
+from ..logger.logger import _get_duration
 
 #from constants_vars import gridded_data_var
 
@@ -97,6 +98,14 @@ class ClassificationDataFrames:
           
         self.dict_ = {}
         
+        #Set a specific logger classifications results
+        logname = os.path.join(params[0]["output_dir"], "classfications.log")
+        logging.basicConfig(filename=logname,
+                                    filemode="a",
+                                    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+                                    datefmt="%H:%M:%S",
+                                    level=logging.DEBUG)
+        
         for element in params:
             vars_classification = {}
             gdf = gpd.GeoDataFrame.from_file(element["filepath"])
@@ -121,13 +130,35 @@ class ClassificationDataFrames:
                     gdf[variable]
                     )
                     
-                    logger.info(
+                    logging.info(
                             "Element {}, variable {}, duration => {}".format(
                                     element["name"],
                                     variable,
                                     _get_duration(start)
                                     )
                             )
+                    if "results" in vars_classification.values():
+                        info = """
+                               ===============
+                               {}
+                               ===============
+                               
+                               Results:
+                                   {}
+                                   
+                               ---------------
+                               
+                               Best:
+                                   {}
+                               
+                                --------------
+                                
+                               """.format(
+                               variable, 
+                               vars_classification.values()["results"],
+                               vars_classification.values()["best"]["name"]
+                               )
+                        logging.info(info)
 
             if element["name"] in self.dict_:
                 self.dict_[element["name"]].update(vars_classification) 
@@ -157,22 +188,6 @@ class ClassificationDataFrames:
                         driver=driver
                         )
                 
-            #Write JSON results of classification (logs)
-            classif_log = os.path.join(
-                    output_dir,
-                    element["name"] + "_classification_log.json"
-                    )
-            
-            vars_classification_export = {}
-            for k,v in vars_classification.items():
-                if "results" in v.keys():
-                    vars_classification_export[k] = {
-                            "results":v["results"],
-                            "best":v["best"]["name"]
-                            }
-            self.test =  vars_classification_export    
-#            with open(classif_log, "w") as f:
-#                json.dump(vars_classification_export, f)
     
     def _get_interval(self, bins):
         """
