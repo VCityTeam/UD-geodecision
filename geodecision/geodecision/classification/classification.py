@@ -11,8 +11,9 @@ import geopandas as gpd
 import mapclassify as mc
 import os
 import time
+import logging
 
-from ..logger.logger import _get_duration, logger
+from ..logger.logger import _get_duration
 
 #from constants_vars import gridded_data_var
 
@@ -97,10 +98,13 @@ class ClassificationDataFrames:
           
         self.dict_ = {}
         
-        #Set a specific name for classifications results
-        logname = os.path.join(params[0]["output_dir"], "classfications.log")
-        print ("LOGNAME", logname)
-        logger.handlers[1].baseFilename = logname
+        #Set a specific logger for classifications results
+        logname = os.path.join(params[0]["output_dir"], "classifications.log")
+        file_handler = logging.FileHandler(logname, 'a')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+        logger = logging.getLogger()
+        logger.addHandler(file_handler)
         
         for element in params:
             vars_classification = {}
