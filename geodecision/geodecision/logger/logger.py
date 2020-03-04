@@ -12,24 +12,27 @@ import time
 import datetime
 import os
 
-filename = "activity.log"
-try:
-    os.remove(filename)
-except OSError:
-    pass
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
- 
-formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
-file_handler = RotatingFileHandler('activity.log', 'a', 1000000, 1)
-file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
- 
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.WARNING)
-logger.addHandler(stream_handler)
+def create_logger(filename="activity.log"):
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+    
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+     
+    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+    file_handler = RotatingFileHandler(filename, 'a', 1000000, 1)
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+     
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.WARNING)
+    logger.addHandler(stream_handler)
+    
+    return logger
 
 
 def _get_duration(start):
@@ -65,3 +68,6 @@ def _get_duration(start):
     duration = str(datetime.timedelta(seconds=seconds))
     
     return duration
+
+if __name__ == "__main__":
+    logger = create_logger()
