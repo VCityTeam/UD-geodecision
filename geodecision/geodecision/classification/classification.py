@@ -106,6 +106,8 @@ class ClassificationDataFrames:
                                     datefmt="%H:%M:%S",
                                     level=logging.DEBUG)
         
+        logger = logging.getLogger("Classification")
+        
         for element in params:
             vars_classification = {}
             gdf = gpd.GeoDataFrame.from_file(element["filepath"])
@@ -130,7 +132,7 @@ class ClassificationDataFrames:
                     gdf[variable]
                     )
                     
-                    logging.info(
+                    logger.info(
                             "Element {}, variable {}, duration => {}".format(
                                     element["name"],
                                     variable,
@@ -158,7 +160,7 @@ class ClassificationDataFrames:
                                vars_classification.values()["results"],
                                vars_classification.values()["best"]["name"]
                                )
-                        logging.info(info)
+                        logger.info(info)
 
             if element["name"] in self.dict_:
                 self.dict_[element["name"]].update(vars_classification) 
