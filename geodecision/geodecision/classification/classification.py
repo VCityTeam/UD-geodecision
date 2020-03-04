@@ -157,7 +157,7 @@ class ClassificationDataFrames:
                         driver=driver
                         )
                 
-            #Write results of classification (logs)
+            #Write JSON results of classification (logs)
             classif_log = os.path.join(
                     output_dir,
                     element["name"] + "_classification_log.json"
@@ -170,9 +170,9 @@ class ClassificationDataFrames:
                             "results":v["results"],
                             "best":v["best"]["name"]
                             }
-                
-            with open(classif_log, "w") as f:
-                json.dump(vars_classification_export, f)
+            return vars_classification_export    
+#            with open(classif_log, "w") as f:
+#                json.dump(vars_classification_export, f)
     
     def _get_interval(self, bins):
         """
