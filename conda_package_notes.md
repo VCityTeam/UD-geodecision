@@ -216,25 +216,41 @@ setup(
 ```
 
 ## Conda build
+### Install conda-build
+> *See [conda documentation](https://docs.conda.io/projects/conda-build/en/latest/install-conda-build.html)*
+
+In terminal window:
+```bash
+conda install conda-build
+```
+
 ### Build the package
-Once the recipe is done, you can build the package:
+Once the recipe is done, you can build the package (*this process could take a few seconds to a few minutes regarding your package*):
 * *command*:
     ```bash
     conda build --numpy [numpy version to use] --output-folder [path/to/output/folder] [path/to/recipe/folder]
     ```
 * *short explanations*:
-    *
+    * ```--numpy [numpy version to use]``` => numpy version to use (*optional but will use default 1.11 in case of no version given*)
+    * ```--output-folder [path/to/output/folder]``` => destination folder for the built package
+    * ```[path/to/recipe/folder]``` => path to conda recipe folder (*containing the ```meta.yml``` file*)
 * *example*:
     ```bash
     conda build --numpy 1.17.3 --output-folder test/build/ test/conda.recipe/
     ```
 
 ### Convert the package
+> *[Conda documentation](https://docs.conda.io/projects/conda-build/en/latest/resources/commands/conda-convert.html#conda-convert)*
+
 You can convert your package in order to set it for the other platforms and OS:
 * *command*:
     ```bash
     conda convert [path/to/tar.bz2/file]  --platform [platform] -o [path/to/output/folder]
     ```
+* *short explanations*:
+    * ```[path/to/tar.bz2/file]``` => path to the built package .tar.bz2 file
+    * ```--platform [platform]``` =>
+    * ``` ```
 * *example*:
     ```bash
     conda convert test/build/linux-64/test-0.7.0-py37_0.tar.bz2  --platform win-64 -o test/build/
@@ -245,9 +261,14 @@ You can convert your package in order to set it for the other platforms and OS:
 #### Directly from tarball
 > ***/!\ WARNING: "Installing packages directly from the file does not resolve dependencies. If your installed package does not work, it may have missing dependencies that need to be resolved manually." ([Anaconda User Guide](https://docs.anaconda.com/anaconda/user-guide/tasks/install-packages/#installing-packages-on-a-non-networked-air-gapped-computer))***
 
+```bash
+conda install --use-local [path/to/file.tar.bz2]
+```
+
 #### By creating a conda channel
-> *See the [Stackoverflow answer](https://stackoverflow.com/a/35605508)*
-1. Create a directory channel:
+> ***Installation via this way allows to use local build package but resolve dependencies.** See the [Stackoverflow answer](https://stackoverflow.com/a/35605508)*
+
+1. **Create a directory channel**:
     * *command*:
         ```bash
         mkdir -p [path/to/new/directory/channel/arch]
@@ -256,7 +277,7 @@ You can convert your package in order to set it for the other platforms and OS:
         ```bash
         mkdir -p /tmp/my-conda-channel/linux-64
         ```
-2. Copy the build file to the channel & architecture directory:
+2. **Copy the build file to the channel & architecture directory**:
     * *command*:
         ```bash
         cp [path/to/tar.bz2/build/file] [path/to/new/directory/channel/arch/]
@@ -265,7 +286,7 @@ You can convert your package in order to set it for the other platforms and OS:
         ```bash
         cp test/build/linux-64/test-0.7.0-py37_0.tar.bz2 /tmp/my-conda-channel/linux-64/
         ```
-3. Conda index the channel:
+3. **Conda index the channel**:
     * *command*:
         ```bash
         conda index [path/to/new/directory/channel/arch]
@@ -274,7 +295,7 @@ You can convert your package in order to set it for the other platforms and OS:
         ```bash
         conda index /tmp/my-conda-channel/linux-64/
         ```
-4. Conda install from this channel:
+4. **Conda install from this channel**:
     * *command*:
         ```bash
         conda install -c file:[path/to/new/directory/channel/] [package_name]=[package_version]
@@ -291,8 +312,8 @@ You can convert your package in order to set it for the other platforms and OS:
     * The Sheer Joy of Packaging | SciPy 2018 Tutorial:
         * [Tutorial notes :notebook:](https://python-packaging-tutorial.readthedocs.io/en/latest/)
         * [Tutorial video :tv:](https://www.youtube.com/watch?v=xiI1i525ljE)
-        * [Tutorial materials :open_file_folder:](https://github.com/python-packaging-tutorial/python-packaging-tutorial)
-    * [Anaconda recipes :open_file_folder:](https://github.com/AnacondaRecipes)
+        * [Tutorial materials :octocat:](https://github.com/python-packaging-tutorial/python-packaging-tutorial)
+    * [Anaconda recipes :octocat:](https://github.com/AnacondaRecipes)
     * [Production-grade Packaging with Anaconda | AnacondaCon 2018 :tv:](https://www.youtube.com/watch?v=tfI2hdK6vVY)
     * [Conda package specification :notebook:](https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html)
     * [Build scripts :notebook:](https://docs.conda.io/projects/conda-build/en/latest/resources/build-scripts.html)
@@ -304,15 +325,15 @@ You can convert your package in order to set it for the other platforms and OS:
     * [Python Packaging User Guide :notebook:](https://packaging.python.org/)
     * [Detailed tutorial :notebook:](https://python-packaging.readthedocs.io/en/latest/)
 * Cookiecutter templates:
-    * [cookiecutter-conda-python :open_file_folder:](https://github.com/conda/cookiecutter-conda-python)
-    * [Python Cookiecutter :open_file_folder:](https://github.com/DerThorsten/py_cookiecutter)
+    * [cookiecutter-conda-python :octocat:](https://github.com/conda/cookiecutter-conda-python)
+    * [Python Cookiecutter :octocat:](https://github.com/DerThorsten/py_cookiecutter)
 * Conda VS pip:
     * [Conda vs. pip vs. virtualenv commands :notebook:](https://conda.io/projects/conda/en/latest/commands.html#conda-vs-pip-vs-virtualenv-commands)
 * Others:
     * [Python Packaging from Init to Deploy, Dave Forgac, Py! Ohio 2015 :tv:](https://www.youtube.com/watch?v=4fzAMdLKC5k)
     * [Building and Distributing Python Software with Conda, Jonathan Helmus,DePy 2016 :tv:](https://youtu.be/HSK-6dCnYVQ)
-    * [Complete list of GitHub emojis :open_file_folder:](https://gist.github.com/rxaviers/7360908)
-    * [conda install requirements](https://gist.github.com/luiscape/19d2d73a8c7b59411a2fb73a697f5ed4) :octocat:
+    * [Complete list of GitHub emojis :octocat:](https://gist.github.com/rxaviers/7360908)
+    * [conda install requirements :octocat:](https://gist.github.com/luiscape/19d2d73a8c7b59411a2fb73a697f5ed4)
 
 
 ## Developer's notes
