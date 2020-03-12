@@ -5,6 +5,27 @@
 > * have to be built from scratch
 > * require conda to manage base C libraries
 
+## Why build a distribution package with conda ?
+### Notes on spatial libraries
+When a package requires libraries with **spatial functionality** such as [GeoPandas](https://geopandas.org), it will be easier to work with [Conda](https://docs.conda.io/projects/conda/en/latest/). Such libraries depends on on open source libraries ([GEOS](https://geos.osgeo.org/), [GDAL](https://www.gdal.org/), [PROJ](https://proj.org/)). As written in GeoPandas "*Those **base C libraries can sometimes be a challenge to install**. [...] So depending on your platform, you might need to compile and install their C dependencies manually. [...]. Using conda [...] avoids the need to compile the dependencies yourself.*".
+
+> *If you want to read more about it, you may want to read the [GeoPandas installation warnings](https://geopandas.org/install.html#installation) and the [blog article on differences between conda and pip](https://www.anaconda.com/understanding-conda-and-pip/). You can also have a look on the table below (from the just quoted blog article)*
+
+|                       | conda                   | pip                             |
+|-----------------------|-------------------------|---------------------------------|
+| manages               | binaries                | wheel or source                 |
+| can require compilers | no                      | yes                             |
+| package types         | any                     | Python-only                     |
+| create environment    | yes, built-in           | no, requires virtualenv or venv |
+| **dependency checks** | **yes**                 | **no**                          |
+| package sources       | Anaconda repo and cloud | PyPI                            |
+
+Regarding these warnings and for **purposes of stability and multi-platform installations**, Conda seems to be the best option and Conda is used massively now and especially in the **data science**, machine learning and AI domains (*it includes most of useful packages such as NumPy, Pandas, ...*) and for **visualization**.
+
+## Get & install Conda (*Miniconda*) or Anaconda:
+* [Miniconda](https://docs.conda.io/en/latest/miniconda.html) *=> minimal package*
+* [Anaconda](https://www.anaconda.com/distribution/) *=> includes graphical interface and other tools*
+
 ## Definitions
 * ***sdist***: source distribution, simple source-only .tar.gz
 * ***bdist***: binary distribution => wheel. *To build and upload a distribution package*:
@@ -19,7 +40,7 @@
 
 ## A quick look on different states
 | state | usable | importable | distribution package pip | distribution package conda | environment required | manage dependencies |
-|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
 | standalone module | :heavy_check_mark: | :x: | :x: |:x: |:x: |:x:|
 | simple package (*init Python files and hierarchy*)| :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :x: | :x: |
 | conda environment with package | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
@@ -249,8 +270,8 @@ You can convert your package in order to set it for the other platforms and OS:
     ```
 * *short explanations*:
     * ```[path/to/tar.bz2/file]``` => path to the built package .tar.bz2 file
-    * ```--platform [platform]``` =>
-    * ``` ```
+    * ```--platform [platform]``` => platform name (*ex: linux-32*)
+    * ```-o [path/to/output/folder]``` => output folder
 * *example*:
     ```bash
     conda convert test/build/linux-64/test-0.7.0-py37_0.tar.bz2  --platform win-64 -o test/build/
@@ -269,14 +290,16 @@ conda install --use-local [path/to/file.tar.bz2]
 > ***Installation via this way allows to use local build package but resolve dependencies.** See the [Stackoverflow answer](https://stackoverflow.com/a/35605508)*
 
 1. **Create a directory channel**:
-    * *command*:
-        ```bash
-        mkdir -p [path/to/new/directory/channel/arch]
-        ```
-    * *example*:
-        ```bash
-        mkdir -p /tmp/my-conda-channel/linux-64
-        ```
+> *Recommanded to use a tmp directory and respect the location of this directory*
+
+* *command*:
+    ```bash
+    mkdir -p [path/to/new/directory/channel/arch]
+    ```
+* *example*:
+    ```bash
+    mkdir -p /tmp/my-conda-channel/linux-64
+    ```
 2. **Copy the build file to the channel & architecture directory**:
     * *command*:
         ```bash
@@ -304,6 +327,33 @@ conda install --use-local [path/to/file.tar.bz2]
         ```bash
         conda install -c file://tmp/my-conda-channel/ test=0.7.0
         ```
+
+## Developer's notes
+> *This method could be compared to the creation of a virtual environment and ```pip install -e``` command*.
+
+### Create an conda virtual environment
+#### From scratch
+```bash
+conda create --name [your_env]
+```
+ #### From file
+```bash
+conda env create -f [path/to/env.yaml/file]
+```
+
+### Activate this environment
+```bash
+conda activate [name_of_the_env]
+```
+
+### Install the package (*symbolik link*)
+```bash
+conda develop [path_to_package]
+```
+
+### Build after changes
+> *[Follow the process described in this documentation](#set_the_conda_recipe) and make the necessary changes/adaptations*
+
 
 ### Useful resources
 * Conda packaging:
@@ -334,60 +384,3 @@ conda install --use-local [path/to/file.tar.bz2]
     * [Building and Distributing Python Software with Conda, Jonathan Helmus,DePy 2016 :tv:](https://youtu.be/HSK-6dCnYVQ)
     * [Complete list of GitHub emojis :octocat:](https://gist.github.com/rxaviers/7360908)
     * [conda install requirements :octocat:](https://gist.github.com/luiscape/19d2d73a8c7b59411a2fb73a697f5ed4)
-
-
-## Developer's notes
-### Install conda-build
-```bash
-conda install conda-build
-```
-
-### Take an example using skeleton
-```bash
-conda skeleton pypi click --python-version 3.7
-```
-
-## Installation
-### Warnings/Disclaimer
-> ***/!\ Please read carefully these warnings related to spatial libraries installation***
-
-Our package requires libraries with **spatial functionality** such as [GeoPandas](https://geopandas.org). Such libraries depends on on open source libraries ([GEOS](https://geos.osgeo.org/), [GDAL](https://www.gdal.org/), [PROJ](https://proj.org/)). As written in GeoPandas "*Those **base C libraries can sometimes be a challenge to install**. [...] So depending on your platform, you might need to compile and install their C dependencies manually. [...]. Using conda [...] avoids the need to compile the dependencies yourself.*".
-
-If you want to read more about it, you may want to read the [GeoPandas installation warnings](https://geopandas.org/install.html#installation) and the [blog article on differences between conda and pip](https://www.anaconda.com/understanding-conda-and-pip/). You can also have a look on the table below (*from the just quoted blog article*)
-
-|                       | conda                   | pip                             |
-|-----------------------|-------------------------|---------------------------------|
-| manages               | binaries                | wheel or source                 |
-| can require compilers | no                      | yes                             |
-| package types         | any                     | Python-only                     |
-| create environment    | yes, built-in           | no, requires virtualenv or venv |
-| **dependency checks** | **yes**                 | **no**                          |
-| package sources       | Anaconda repo and cloud | PyPI                            |
-
-Regarding these warnings and for **purposes of stability and multi-platform installations**, we choose to use [Conda](https://docs.conda.io/projects/conda/en/latest/) - *an open-source package management system and environment management system* - to install and work with our package. **We use pip - *only through conda* - for specific packages** (*that does not exist on [Anaconda](https://www.anaconda.com/) repo and cloud*). Conda is used massively now and especially in the **data science**, machine learning and AI domains (*it includes most of useful packages such as NumPy, Pandas, ...*) and for **visualization**.
-
-We choose to install it through the creation of a **conda virtual environment** that install and contains all the **required libraries as well as our own package**.
-
-### How to
-#### Install geodecision environment (*containing geodecision package*)
-> *Documentation about [conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#managing-environments)*
-
-1. Get & install conda:
-    * [Miniconda](https://docs.conda.io/en/latest/miniconda.html) *=> minimal package*
-    * [Anaconda](https://www.anaconda.com/distribution/) *=> includes graphical interface and other tools*
-2. Clone or download this repository
-3. Open a Command Line Interface inside the cloned repository
-4. Install the environment and GeoDecision from the environment file:
-    ```bash
-    conda env create -f ./geodecision/env.yml
-    ```
-
-#### Use it
-1. Once installation done, to use our package, activate the virtual environment:
-    ```bash
-    conda activate geodecision
-    ```
-2. You can use your IDE, Jupyter notebooks, *etc* ... inside this environnement via Anaconda tools or your favorite tools. You, of course, have to install these tools within this environment or connect them to it.
-
-#### Future developments
-We will certainly, for the future releases, develop a Conda package to make installation of our package simpler. But our package is still on a beta version and the [build of a Conda package](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html) from a local package may require some time and improvements. If we want to build a pip install ready package, it will demand to make detailed instructions for each OS to avoid spatial dependencies installation problems (*it could be really difficult regarding the OS and the existing environment*).  
