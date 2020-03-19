@@ -3,7 +3,21 @@
 ## Presentation
 > ***Note** => This package is mainly use - for now - through [dockers](https://github.com/VCityTeam/UD-geodecision-docker)*
 
-> ***TODO***
+Geodecision is a set of tools to help urban decision-making:
+* Accessibility/network operations and measures (*graph approach*).
+* CityGML parsing to get roofs and measures:
+  * slopes
+  * area
+  * compactness
+  * ...
+* OSM queries
+* Classification (*automatic best classification from data - for example INSEE gridded data*)
+* Spatial operations:
+  * intersections between GeoDataFrame
+
+Geodecision inputs and outputs are geospatial data:
+* [GeoJSON](https://geojson.org/)
+* [GeoPackages (an OGC open format)](https://www.geopackage.org/)
 
 ## Installation
 ### Warnings/Disclaimer
@@ -22,31 +36,68 @@ If you want to read more about it, you may want to read the [GeoPandas installat
 | **dependency checks** | **yes**                 | **no**                          |
 | package sources       | Anaconda repo and cloud | PyPI                            |
 
-Regarding these warnings and for **purposes of stability and multi-platform installations**, we choose to use [Conda](https://docs.conda.io/projects/conda/en/latest/) - *an open-source package management system and environment management system* - to install and work with our package. **We use pip - *only through conda* - for specific packages** (*that does not exist on [Anaconda](https://www.anaconda.com/) repo and cloud*). Conda is used massively now and especially in the **data science**, machine learning and AI domains (*it includes most of useful packages such as NumPy, Pandas, ...*) and for **visualization**.
+Regarding these warnings and for **purposes of stability and multi-platform installations**, we choose to use [Conda](https://docs.conda.io/projects/conda/en/latest/) - *an open-source package management system and environment management system* - to install and work with our package. Conda is used massively now and especially in the **data science**, machine learning and AI domains (*it includes most of useful packages such as NumPy, Pandas, ...*) and for **visualization**.
 
 We choose to install it through the creation of a **conda virtual environment** that install and contains all the **required libraries as well as our own package**.
 
 ### How to
-#### Install geodecision environment (*containing geodecision package*)
+> ***Disclaimer*** Geodecision is a conda package but not yet available on Anaconda cloud due to its actual private status (*once public, the build packages could be uploaded to Anaconda cloud*). So the installation must be set from an offline build package.   
+
+#### Install geodecision
 1. Get & install conda:
     * [Miniconda](https://docs.conda.io/en/latest/miniconda.html) *=> minimal package*
     * [Anaconda](https://www.anaconda.com/distribution/) *=> includes graphical interface and other tools*
-2. Clone or download this repository
-3. Open a Command Line Interface inside the cloned repository
-4. Install the environment and GeoDecision from the environment file:
+2. Clone or download this repository:
+  * Create a conda virtual environment [*Optional but strongly recommended*]:
     ```bash
-    conda env create -f ./geodecision/env.yml
+    conda create --name [myenv]
+    ```
+3. Open a Command Line Interface inside the cloned repository
+4. **Create a directory channel**:
+  > *Recommended to use a tmp directory and respect the location of this directory*
+
+  * *command*:
+      ```bash
+      mkdir -p [path/to/new/directory/channel/arch]
+      ```
+  * *example*:
+      ```bash
+      mkdir -p /tmp/my-conda-channel/linux-64
+    ```
+5. **Copy the build file to the channel & architecture directory**:
+    * *command*:
+        ```bash
+        cp [path/to/tar.bz2/build/file] [path/to/new/directory/channel/arch/]
+        ```
+    * *example*:
+        ```bash
+        cp test/build/linux-64/test-0.7.0-py37_0.tar.bz2 /tmp/my-conda-channel/linux-64/
+        ```
+6. **Conda index the channel**:
+    * *command*:
+        ```bash
+        conda index [path/to/new/directory/channel/arch]
+        ```
+    * *example*:
+        ```bash
+        conda index /tmp/my-conda-channel/linux-64/
+        ```
+7. **Conda install from this channel**:
+    * *command*:
+        ```bash
+        conda install -c file:[path/to/new/directory/channel/] [package_name]=[package_version]
+        ```
+    * *example*:
+        ```bash
+        conda ins
     ```
 
 #### Use it
-1. Once installation done, to use our package, activate the virtual environment:
-    ```bash
-    conda activate geodecision
-    ```
-2. You can use your IDE, Jupyter notebooks, *etc* ... inside this environnement via Anaconda tools or your favorite tools. You, of course, have to install these tools within this environment or connect them to it.
-
-#### Future developments
-We will certainly, for the future releases, develop a Conda package to make installation of our package simpler. But our package is still on a beta version and the [build of a Conda package](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html) from a local package may require some time and improvements. If we want to build a pip install ready package, it will demand to make detailed instructions for each OS to avoid spatial dependencies installation problems (*it could be really difficult regarding the OS and the existing environment*).  
+Once installed, you can use it as other packages:
+```python
+import geodecision
+from geodecision import [specific]
+```
 
 ### Architecture
 #### Python geodecision module and sub-modules
@@ -88,31 +139,33 @@ geodecision/
     └── operations.py
 ```
 
-## Features
-> ***TODO***
+## Developer's notes
+### Work with geodecision and make changes
+> *This method could be compared to the creation of a virtual environment and ```pip install -e``` command*.
 
-### Developer's information
-#### About Cookiecutter (*create package*)
-> [Complete guide](https://docs.python-guide.org/writing/structure/)
-
-> To make license choice easier, check [choosealicense](http://choosealicense.com/)
-
-##### Quick & easy way
-* Use [Cookiecutter](https://github.com/cookiecutter/cookiecutter) and one of their templates like [cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
-```
-pip install -U cookiecutter
-cookiecutter https://github.com/audreyr/cookiecutter-pypackage.git
+### Create a conda virtual environment from ```dev_env.yml``` file
+```bash
+conda env create -f [path/to/geodecision/dev_env.yml]
 ```
 
-##### Documentation
-> We use [Sphinx](http://www.sphinx-doc.org/) for documentation
-
-###### A good structuration
-Once you have put your modules into the generated structure, it is time to organise it in a pythonic way. Below is what you get when you use the [cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage). In this example, you have a module named ```mymodule```.
+### Activate this environment
+```bash
+conda activate dev_env
 ```
- mymodule:
+
+### Install the package (*symbolik link*)
+```bash
+conda develop [path/to/geodecision]
+```
+
+### Structure correctly your modules and submodules
+#### A good structuration
+Our conda geodecision package is structured like this (*see below*) and you have to respect this organisation if you want to add your own modules and submodules.
+```
+ geodecision:
     |--- AUTHORS.rst
     |--- CONTRIBUTING.rst
+    |--- dev_env.yml
     |--- HISTORY.rst
     |--- Makefile
     |--- MANIFEST.in
@@ -123,7 +176,8 @@ Once you have put your modules into the generated structure, it is time to organ
     |--- tox.ini
     |--- .editorconfig
     |--- .gitignore
-    |--- .travis.yml
+    |___ conda.recipe
+    |    |--- meta.yml
     |___ docs
     |    |--- authors.rst
     |    |--- conf.py
@@ -136,10 +190,41 @@ Once you have put your modules into the generated structure, it is time to organ
     |    |--- modules.rst
     |    |--- readme.rst
     |    |--- usage.rst
-    |___ mymodule:
-    |    |--- cli.py
-    |    |--- __init__.py
-    |    |--- mymodule.py
+    |___ geodecision
+    |     ├── accessibility
+    |     │   ├── accessibility.py
+    |     │   ├── __init__.py
+    |     │   ├── isochrone.py
+    |     │   └── schema.py
+    |     ├── bokeh_snippets
+    |     │   ├── bokeh_snippets.py
+    |     ├── citygml
+    |     |      │   └── __init__.py
+    |     │   ├── analyseroofs.py
+    |     │   ├── categories.py
+    |     │   ├── constants.py
+    |     │   └── __init__.py
+    |     ├── classification
+    |     │   ├── classification.py
+    |     │   ├── constants_vars.py
+    |     │   └── __init__.py
+    |     ├── cli.py
+    |     ├── geodecision.py
+    |     ├── graph
+    |     │   ├── connectpoints.py
+    |     │   ├── __init__.py
+    |     │   ├── splittednodes.py
+    |     │   └── utils.py
+    |     ├── __init__.py
+    |     ├── logger
+    |     │   ├── __init__.py
+    |     │   └── logger.py
+    |     ├── osmquery
+    |     │   ├── __init__.py
+    |     │   └── methods.py
+    |     └── spatialops
+    |         ├── __init__.py
+    |         └── operations.py
     |___ tests
     |    |--- __init__.py
     |    |--- test_mymodule.py
@@ -184,7 +269,13 @@ If you want to import ***class OneB*** from ```submoduleBOne``` in ```submoduleA
 from ..submoduleB.submoduleBOne import OneB
 ```
 
-###### Generate documentation with Sphinx
+### Build after changes
+> *[Follow the process described in this documentation](https://github.com/VCityTeam/UD-SV/blob/master/UD-Doc/Devel/BuildCondaPackage.md) and make the necessary changes/adaptations*
+
+### Documentation
+> We use [Sphinx](http://www.sphinx-doc.org/) for documentation
+
+#### Generate documentation with Sphinx
 > ***/!\ If you use the [numpydoc docstrings](https://numpydoc.readthedocs.io/en/latest/format.html#), add the [napoleon sphinx extension](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html) in ```conf.py```***:
 ```
 mymodule:
@@ -204,7 +295,3 @@ It will generate a bunch of ***rst*** files. Then, to get ***html*** pages (*in 
 cd ..
 sphinx-build -b html docs/ _build/
 ```
-
-#### *To know more*
-* [Manage conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#)
-* [Cookiecutter](https://cookiecutter.readthedocs.io/en/latest/) to easily create Python packages. *The package was created with Cookiecutter and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)*.

@@ -41,7 +41,7 @@ def gdf_to_geosource(gdf):
             )
         )
 
-def get_intersect_matches(base, points):
+def get_intersect_matches(base, possible_intersected):
         """
         Description:
         ------------
@@ -57,12 +57,12 @@ def get_intersect_matches(base, points):
         """
         #TODO: Check if intersection on "to" is necessary
         matches = []
-        points = points.set_geometry("from")
-        sindex = points.sindex
+        possible_intersected = possible_intersected.set_geometry("from")
+        sindex = possible_intersected.sindex
         
         for poly in base:
             possible_matches_index = list(sindex.intersection(poly.bounds))
-            possible_matches = points.iloc[possible_matches_index]
+            possible_matches = possible_intersected.iloc[possible_matches_index]
             precise_matches = possible_matches[
                     possible_matches.intersects(poly)
                     ]
