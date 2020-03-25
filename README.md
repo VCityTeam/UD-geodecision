@@ -89,7 +89,7 @@ We choose to install it through the creation of a **conda virtual environment** 
         ```
     * *example*:
         ```bash
-        conda ins
+        conda install -c file://tmp/my-conda-channel/ test=0.7.0
     ```
 
 #### Use it
