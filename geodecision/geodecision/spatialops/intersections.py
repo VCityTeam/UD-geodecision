@@ -17,7 +17,7 @@ from copy import deepcopy
 
 speedups.enable()
 
-from logger import _get_duration, logger
+from ..logger.logger import _get_duration, logger
 
     
 class GetIntersections:
