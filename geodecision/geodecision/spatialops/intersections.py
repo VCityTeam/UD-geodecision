@@ -178,48 +178,7 @@ class GetIntersections:
         return ox.quadrat_cut_geometry(
             geometry,
             quadrat_width = self.quadrat_width
-            )
-
-    def get_wkb(self, geometry):
-        """
-        Description:
-        ------------
-        Get wkb of a geometry
-        
-        Parameters
-        ----------
-        geometry(Shapely object)
-
-        Returns
-        -------
-        WKB of the geometry
-
-        """
-        return geometry.wkb
-    
-    def write_to_feather(self, gdf, name):
-        """
-        Description:
-        ------------
-        Writes gdf to feather file
-        
-
-        Parameters
-        ----------
-        gdf(GeoDataFrame): GeoPandas GeoDataFrame
-        name(str): output pathfile 
-
-        Returns
-        -------
-        None.
-
-        """
-        
-        gdf["wkb"] = gdf.geometry.map(self.get_wkb)
-        gdf = gdf.drop(columns=["geometry"])
-        gdf.to_feather(name)
-    
-  
+            )  
    
     def get_all_intersected(self):
         """
