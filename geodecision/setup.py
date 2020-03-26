@@ -20,6 +20,7 @@ setup(
     packages=find_packages(include=["geodecision", "geodecision.*"]),
     install_requires=[
 			"bokeh>=1.4",
+			"fiona"
 			"geopandas>=0.6.0",
 			"geojson>=2.4.1",
 			"geopy>=1.20.0",
