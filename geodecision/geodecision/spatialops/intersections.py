@@ -263,12 +263,7 @@ class GetIntersections:
                 )
             if invalid.empty is False:
                 invalid.to_file(self.output, layer = "invalid", driver="GPKG")
-        elif self.driver == "FEATHER":
-            self.write_to_feather(self.source_gdf, self.output)
-            if invalid.empty is False:
-                invalid_name = os.path.splitext(self.output)[0]
-                invalid_name = invalid_name + "_invalid_.feather"
-                self.write_to_feather(invalid, invalid_name)
+
         elif self.driver == "GEOJSON":
             self.source_gdf.to_file(self.output, driver="GeoJSON")
             if invalid.empty is False:

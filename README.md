@@ -44,6 +44,10 @@ We choose to install it through the creation of a **conda virtual environment** 
 > ***Disclaimer*** Geodecision is a conda package but not yet available on Anaconda cloud due to its actual private status (*once public, the build packages could be uploaded to Anaconda cloud*). So the installation must be set from an offline build package.   
 
 #### Install geodecision
+##### Current installation process
+
+***/!\ Disclaimer: The installation process is a little bit more complicated than it should due to the privacy of our repository. Normally, the build package should have been uploaded on [Anaconda cloud](https://docs.anaconda.com/anaconda-cloud/user-guide/tasks/work-with-packages/#uploading-conda-packages) to be available and easily installable with a simple command ```conda install -c [channel] geodecision```. But this package is still not yet open source (will be) so we had to make the build package available from a private place. This package is used by [UD-geodecision-docker processes](https://github.com/VCityTeam/UD-geodecision-docker) and the building process of this package could require a few minutes. So it appeared simpler to make build package (Linux, OSX and Windows versions) available in ```geodecision.conda.build``` directory. This will change when this repository will become open source (see [Moving to open source section](#moving-to-open-source))***
+
 1. Get & install conda:
     * [Miniconda](https://docs.conda.io/en/latest/miniconda.html) *=> minimal package*
     * [Anaconda](https://www.anaconda.com/distribution/) *=> includes graphical interface and other tools*
@@ -71,7 +75,7 @@ We choose to install it through the creation of a **conda virtual environment** 
         ```
     * *example*:
         ```bash
-        cp test/build/linux-64/test-0.7.0-py37_0.tar.bz2 /tmp/my-conda-channel/linux-64/
+        cp conda.build/linux-64/geodecision-0.1-0.tar.bz2 /tmp/my-conda-channel/linux-64/
         ```
 6. **Conda index the channel**:
     * *command*:
@@ -89,8 +93,48 @@ We choose to install it through the creation of a **conda virtual environment** 
         ```
     * *example*:
         ```bash
-        conda ins
+        conda install -c file://tmp/my-conda-channel/ geodecision=0.1
+        ```
+
+##### Moving to open source
+Once this repository moved to open source, these changes will be required:
+* upload build package to [Anaconda cloud](https://docs.anaconda.com/anaconda-cloud/user-guide/tasks/work-with-packages/#uploading-conda-packages)
+* remove ```geodecision.conda.build``` directory
+* change installation process:
+  ```bash
+  conda install -c [channel] geodecision
+  ```
+* update the installation process in [UD-geodecision-docker](https://github.com/VCityTeam/UD-geodecision-docker):
+  * Replace:
     ```
+    # Create a directory channel
+    RUN mkdir -p /tmp/my-conda-channel/linux-64
+
+    # Copy the build file to the channel & architecture directory
+    RUN cp UD-geodecision/geodecision/conda.build/linux-64/geodecision-0.1-0.tar.bz2 /tmp/my-conda-channel/linux-64/
+    RUN conda install conda-build
+
+    # Index the channel
+    RUN conda index /tmp/my-conda-channel/linux-64/
+
+    # Create conda virtual environment
+    RUN conda create --name geodecision
+    SHELL ["conda", "run", "-n", "geodecision", "/bin/bash", "-c"]
+
+    # Conda install geodecision package
+    RUN conda config --append channels conda-forge
+    RUN conda install -c file://tmp/my-conda-channel/ geodecision=0.1
+    ```
+  * By:
+    ```
+    # Create conda virtual environment
+    RUN conda create --name geodecision
+    SHELL ["conda", "run", "-n", "geodecision", "/bin/bash", "-c"]
+
+    # Install geodecision
+    RUN conda install -c [channel] geodecision
+    ```
+
 
 #### Use it
 Once installed, you can use it as other packages:
