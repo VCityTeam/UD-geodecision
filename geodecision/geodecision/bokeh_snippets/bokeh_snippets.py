@@ -58,15 +58,22 @@ def make_sliders(gdf, values, samples):
         (used to determine step, based on _set_step())
     """     
     sliders = {}
+    roofs_related = ["angles", "area", "min_width", "compactness"]
     for value in values:
         start = gdf[value].min()
         end = gdf[value].max()
         step = _set_step(start, end, samples)
+        if value in roofs_related:
+            title = value + " (Roof's polygon)"
+        elif value == "total_surface":
+            title = "total surface (ground area * nb levels)"
+        else:
+            title = value + " (Building)"
         sliders[value] = RangeSlider(
             start = gdf[value].min(),
             end = gdf[value].max(),
             step=step,
-            title = value,
+            title = title,
             value=(
                 gdf[value].min(),
                 gdf[value].max()
