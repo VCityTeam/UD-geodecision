@@ -135,7 +135,6 @@ Once this repository moved to open source, these changes will be required:
     RUN conda install -c [channel] geodecision
     ```
 
-
 #### Use it
 Once installed, you can use it as other packages:
 ```python
